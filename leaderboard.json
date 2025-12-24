@@ -1,0 +1,24 @@
+[
+  {
+    "gameId": "b2c973db-e4fa-4250-a339-e27ac92f3d67",
+    "date": "2025-12-24T17:01:22.300567",
+    "dateReadable": "2025-12-24 17:01:22",
+    "status": "completed",
+    "admitted": 999,
+    "rejected": 1690,
+    "totalProcessed": 2689,
+    "constraintStatus": {
+      "young": {
+        "count": 696,
+        "minRequired": 600,
+        "met": true
+      },
+      "well_dressed": {
+        "count": 645,
+        "minRequired": 600,
+        "met": true
+      }
+    },
+    "totalDecisionsRecorded": 2690
+  }
+]

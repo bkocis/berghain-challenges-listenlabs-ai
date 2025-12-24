@@ -116,15 +116,46 @@ def store_game_info(response_data: Dict[str, Any], player_id: str, scenario_id: 
 
 def save_to_file(game_info: Dict[str, Any], filename: str = "game_info.json"):
     """
-    Save game information to a JSON file.
+    Save game information to a JSON file, keyed by gameId.
+    Supports multiple games - each game is stored under its gameId.
+    Automatically migrates old format (single game) to new format (dict keyed by gameId).
     
     Args:
         game_info: Dictionary containing game information
         filename: Output filename
     """
-    with open(filename, 'w') as f:
-        json.dump(game_info, f, indent=2)
-    print(f"\nGame information saved to {filename}")
+    # Load existing games if file exists
+    all_games = {}
+    try:
+        with open(filename, 'r') as f:
+            existing_data = json.load(f)
+            
+            # Check if it's old format (single game object)
+            if isinstance(existing_data, dict) and "gameId" in existing_data and isinstance(existing_data["gameId"], str):
+                # Migrate old format to new format
+                old_game_id = existing_data["gameId"]
+                all_games[old_game_id] = existing_data
+                print(f"Migrated old format game to new format (gameId: {old_game_id})")
+            else:
+                # Already in new format
+                all_games = existing_data
+    except FileNotFoundError:
+        pass
+    except json.JSONDecodeError:
+        # If file exists but is invalid JSON, start fresh
+        print(f"Warning: {filename} exists but is invalid JSON. Starting fresh.")
+        all_games = {}
+    
+    # Store this game under its gameId
+    game_id = game_info.get("gameId")
+    if game_id:
+        all_games[game_id] = game_info
+        with open(filename, 'w') as f:
+            json.dump(all_games, f, indent=2)
+        print(f"\nGame information saved to {filename} (gameId: {game_id})")
+        print(f"Total games stored: {len(all_games)}")
+    else:
+        print("Warning: No gameId found in game_info, cannot save properly")
 
 
 def print_game_info(game_info: Dict[str, Any]):
@@ -170,8 +201,22 @@ def main():
     # Print information
     print_game_info(game_info)
     
-    # Save to file
+    # Save to file (will be stored keyed by gameId)
     save_to_file(game_info)
+    
+    # Check if this is a retry of an existing game
+    game_id = game_info.get("gameId")
+    if game_id:
+        # Load all games to check
+        try:
+            with open("game_info.json", 'r') as f:
+                all_games = json.load(f)
+                if isinstance(all_games, dict) and game_id in all_games:
+                    existing_attempts = len(all_games.get(game_id, {}).get("attempts", []))
+                    if existing_attempts > 0:
+                        print(f"\nNote: This gameId already exists with {existing_attempts} previous attempt(s)")
+        except:
+            pass
     
     # Return game_info for programmatic use
     return game_info
