@@ -91,5 +91,98 @@
         }
       }
     }
+  },
+  "7eda12f4-331d-42e2-a474-b8e2a73f9d06": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 1,
+    "gameId": "7eda12f4-331d-42e2-a474-b8e2a73f9d06",
+    "constraints": [
+      {
+        "attribute": "young",
+        "minCount": 600
+      },
+      {
+        "attribute": "well_dressed",
+        "minCount": 600
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "well_dressed": 0.3225,
+        "young": 0.3225
+      },
+      "correlations": {
+        "well_dressed": {
+          "well_dressed": 1,
+          "young": 0.18304299322062992
+        },
+        "young": {
+          "well_dressed": 0.18304299322062992,
+          "young": 1
+        }
+      }
+    }
+  },
+  "cf32500f-6690-4164-b151-41f3a5663073": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 1,
+    "gameId": "cf32500f-6690-4164-b151-41f3a5663073",
+    "constraints": [
+      {
+        "attribute": "young",
+        "minCount": 600
+      },
+      {
+        "attribute": "well_dressed",
+        "minCount": 600
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "well_dressed": 0.3225,
+        "young": 0.3225
+      },
+      "correlations": {
+        "well_dressed": {
+          "well_dressed": 1,
+          "young": 0.18304299322062992
+        },
+        "young": {
+          "well_dressed": 0.18304299322062992,
+          "young": 1
+        }
+      }
+    }
+  },
+  "66963177-d159-4ab2-9603-0c892424d1b8": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 1,
+    "gameId": "66963177-d159-4ab2-9603-0c892424d1b8",
+    "constraints": [
+      {
+        "attribute": "young",
+        "minCount": 600
+      },
+      {
+        "attribute": "well_dressed",
+        "minCount": 600
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "well_dressed": 0.3225,
+        "young": 0.3225
+      },
+      "correlations": {
+        "well_dressed": {
+          "well_dressed": 1,
+          "young": 0.18304299322062992
+        },
+        "young": {
+          "well_dressed": 0.18304299322062992,
+          "young": 1
+        }
+      }
+    }
   }
 }

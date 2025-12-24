@@ -234,6 +234,181 @@ def should_accept_person(
     return False
 
 
+def should_accept_person_BAD(
+    person_attributes: Dict[str, bool],
+    constraints: list,
+    admitted_count: int,
+    attribute_counts: Dict[str, int],
+    total_admitted: int,
+    attribute_statistics: Optional[Dict[str, Any]] = None
+) -> bool:
+    """
+    Decision logic: determine whether to accept or reject a person.
+    
+    Strategy based on optimization criteria:
+    - Uses relative frequencies to estimate expected attribute distribution
+    - Uses correlations to understand joint probabilities
+    - Tracks progress toward constraints (minCount for each attribute)
+    - Prioritizes meeting both constraints while staying within venue capacity
+    
+    Args:
+        person_attributes: Dictionary of attribute IDs to boolean values
+        constraints: List of constraint dictionaries with 'attribute' and 'minCount'
+        admitted_count: Current number of admitted people
+        attribute_counts: Dictionary tracking count of each attribute in admitted people
+        total_admitted: Total number of people admitted so far
+        attribute_statistics: Optional dictionary with 'relativeFrequencies' and 'correlations'
+    
+    Returns:
+        True to accept, False to reject
+    """
+    # If venue is full, reject
+    if admitted_count >= MAX_VENUE_CAPACITY:
+        return False
+    
+    # Extract attribute values
+    is_young = person_attributes.get("young", False)
+    is_well_dressed = person_attributes.get("well_dressed", False)
+    
+    # Get constraint requirements
+    young_min = 600
+    well_dressed_min = 600
+    for constraint in constraints:
+        if constraint['attribute'] == 'young':
+            young_min = constraint['minCount']
+        elif constraint['attribute'] == 'well_dressed':
+            well_dressed_min = constraint['minCount']
+    
+    # Get current counts
+    young_count = attribute_counts.get("young", 0)
+    well_dressed_count = attribute_counts.get("well_dressed", 0)
+    
+    # Calculate progress towards constraints (0.0 to 1.0+)
+    young_progress = young_count / young_min if young_min > 0 else 1.0
+    well_dressed_progress = well_dressed_count / well_dressed_min if well_dressed_min > 0 else 1.0
+    
+    # Calculate how full the venue is (0.0 to 1.0)
+    venue_fill_ratio = admitted_count / MAX_VENUE_CAPACITY
+    
+    # Calculate remaining capacity
+    remaining_capacity = MAX_VENUE_CAPACITY - admitted_count
+    
+    # Calculate remaining needs for each constraint
+    young_needed = max(0, young_min - young_count)
+    well_dressed_needed = max(0, well_dressed_min - well_dressed_count)
+    
+    # Extract attribute statistics if available
+    relative_frequencies = {}
+    correlations = {}
+    if attribute_statistics:
+        relative_frequencies = attribute_statistics.get("relativeFrequencies", {})
+        correlations = attribute_statistics.get("correlations", {})
+    
+    # Get relative frequencies (default to 0.3225 if not provided, based on game_info)
+    young_freq = relative_frequencies.get("young", 0.3225)
+    well_dressed_freq = relative_frequencies.get("well_dressed", 0.3225)
+    
+    # Calculate expected joint probability using correlation
+    # For binary variables: P(both) = P(A)*P(B) + correlation * sqrt(P(A)*(1-P(A))*P(B)*(1-P(B)))
+    correlation = 0.18304299322062992  # Default from game_info
+    if correlations and "well_dressed" in correlations and "young" in correlations.get("well_dressed", {}):
+        correlation = correlations["well_dressed"].get("young", correlation)
+    
+    # Calculate joint probability
+    p_young = young_freq
+    p_well_dressed = well_dressed_freq
+    p_both = p_young * p_well_dressed + correlation * ((p_young * (1 - p_young) * p_well_dressed * (1 - p_well_dressed)) ** 0.5)
+    p_young_only = p_young - p_both
+    p_well_dressed_only = p_well_dressed - p_both
+    p_neither = 1 - p_both - p_young_only - p_well_dressed_only
+    
+    # Strategy 1: Young AND well_dressed - Always accept (most valuable: satisfies both constraints)
+    if is_young and is_well_dressed:
+        # Only reject if we've exceeded both constraints significantly and venue is very full
+        if young_progress >= 1.1 and well_dressed_progress >= 1.1 and venue_fill_ratio > 0.95:
+            return False
+        return True
+    
+    # Strategy 2: Not young AND not well_dressed - Reject (doesn't help with constraints)
+    if not is_young and not is_well_dressed:
+        return False
+    
+    # Strategy 3: Not young BUT well_dressed - Accept if we need well_dressed
+    if not is_young and is_well_dressed:
+        # If we already have enough well_dressed, reject unless venue is very empty
+        if well_dressed_count >= well_dressed_min:
+            # Only accept if we're early in the game and venue is not full
+            if venue_fill_ratio < 0.3:
+                return True
+            return False
+        
+        # Calculate how critical it is to accept well_dressed people
+        # Estimate how many more well_dressed people we expect to see
+        # Based on frequency, we expect ~32.25% of remaining people to be well_dressed
+        # But we need to account for correlation and already admitted people
+        
+        # If we're far behind on well_dressed, be more accepting
+        if well_dressed_progress < 0.7:
+            # Early game: accept liberally
+            if venue_fill_ratio < 0.5:
+                return True
+            # Mid-late game: accept if we have room
+            if remaining_capacity > well_dressed_needed * 1.5:
+                return True
+        
+        # If we're making good progress but not there yet
+        if well_dressed_progress < 0.95:
+            # Accept if we have sufficient remaining capacity
+            # Estimate: we need well_dressed_needed more, and expect ~32% of remaining to have it
+            # So we need roughly well_dressed_needed / 0.32 remaining capacity
+            estimated_capacity_needed = well_dressed_needed / well_dressed_freq if well_dressed_freq > 0 else well_dressed_needed * 3
+            if remaining_capacity >= estimated_capacity_needed * 1.2:  # Add 20% buffer
+                return True
+        
+        # Late game: only accept if critically needed
+        if well_dressed_progress < 0.98 and remaining_capacity > well_dressed_needed * 2:
+            return True
+        
+        return False
+    
+    # Strategy 4: Young BUT not well_dressed - Accept if we need young
+    if is_young and not is_well_dressed:
+        # If we already have enough young, reject unless venue is very empty
+        if young_count >= young_min:
+            # Only accept if we're early in the game and venue is not full
+            if venue_fill_ratio < 0.3:
+                return True
+            return False
+        
+        # Calculate how critical it is to accept young people
+        # Similar logic to well_dressed
+        
+        # If we're far behind on young, be more accepting
+        if young_progress < 0.7:
+            # Early game: accept liberally
+            if venue_fill_ratio < 0.5:
+                return True
+            # Mid-late game: accept if we have room
+            if remaining_capacity > young_needed * 1.5:
+                return True
+        
+        # If we're making good progress but not there yet
+        if young_progress < 0.95:
+            # Accept if we have sufficient remaining capacity
+            estimated_capacity_needed = young_needed / young_freq if young_freq > 0 else young_needed * 3
+            if remaining_capacity >= estimated_capacity_needed * 1.2:  # Add 20% buffer
+                return True
+        
+        # Late game: only accept if critically needed
+        if young_progress < 0.98 and remaining_capacity > young_needed * 2:
+            return True
+        
+        return False
+    
+    # Default: reject (shouldn't reach here with the above logic)
+    return False
+
+
 def play_game(
     game_id: str,
     constraints: Optional[list] = None,
@@ -509,6 +684,7 @@ def save_leaderboard_entry(
     game_id: str,
     results: Dict[str, Any],
     constraints: Optional[list] = None,
+    attribute_statistics: Optional[Dict[str, Any]] = None,
     filename: str = "leaderboard.json"
 ):
     """
@@ -518,6 +694,7 @@ def save_leaderboard_entry(
         game_id: The game ID
         results: Dictionary containing game results
         constraints: List of constraints (optional)
+        attribute_statistics: Optional dictionary with 'relativeFrequencies' and 'correlations'
         filename: Output filename for leaderboard
     """
     # Load existing leaderboard if file exists
@@ -558,6 +735,10 @@ def save_leaderboard_entry(
         "constraintStatus": constraint_status,
         "totalDecisionsRecorded": len(results.get("decisionHistory", []))
     }
+    
+    # Add attribute statistics if provided
+    if attribute_statistics:
+        entry["attributeStatistics"] = attribute_statistics
     
     # Add to leaderboard
     leaderboard.append(entry)
@@ -652,8 +833,8 @@ def display_leaderboard(
 def get_latest_game_id(filename: str = "game_info.json") -> Optional[str]:
     """
     Get the latest gameId from game_info.json.
-    First tries to find the gameId with the most recent attempt.
-    If no attempts exist, returns the last gameId in game_info.json.
+    Returns the most recently created game (last key in the dict).
+    This ensures newly created games are always used.
     
     Args:
         filename: Path to the game info JSON file
@@ -661,30 +842,6 @@ def get_latest_game_id(filename: str = "game_info.json") -> Optional[str]:
     Returns:
         The latest gameId or None if no games exist
     """
-    # First, try to find the gameId with the most recent attempt
-    try:
-        all_attempts = load_game_attempts()
-        if all_attempts:
-            latest_game_id = None
-            latest_timestamp = None
-            
-            for game_id, game_data in all_attempts.items():
-                attempts = game_data.get("attempts", [])
-                if attempts:
-                    # Get the most recent attempt for this game
-                    latest_attempt = max(attempts, key=lambda x: x.get("timestamp", ""))
-                    attempt_timestamp = latest_attempt.get("timestamp", "")
-                    
-                    if latest_timestamp is None or attempt_timestamp > latest_timestamp:
-                        latest_timestamp = attempt_timestamp
-                        latest_game_id = game_id
-            
-            if latest_game_id:
-                return latest_game_id
-    except Exception:
-        pass
-    
-    # If no attempts found, get the last gameId from game_info.json
     try:
         with open(filename, 'r') as f:
             all_games = json.load(f)
@@ -694,10 +851,14 @@ def get_latest_game_id(filename: str = "game_info.json") -> Optional[str]:
             if "gameId" in all_games and isinstance(all_games["gameId"], str):
                 return all_games["gameId"]
             
-            # New format: get the last gameId
+            # New format: get the last gameId (most recently created)
+            # In Python 3.7+, dicts maintain insertion order
             if all_games:
-                # Get the last key (in Python 3.7+, dicts maintain insertion order)
                 return list(all_games.keys())[-1]
+    except FileNotFoundError:
+        pass
+    except json.JSONDecodeError:
+        pass
     except Exception:
         pass
     
@@ -835,7 +996,7 @@ def main():
     save_game_attempt(game_id, results)
     
     # Save to leaderboard
-    save_leaderboard_entry(game_id, results, constraints)
+    save_leaderboard_entry(game_id, results, constraints, attribute_statistics)
     
     # Display attempt summary
     display_attempt_summary(game_id)
