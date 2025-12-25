@@ -12,7 +12,7 @@ from typing import Dict, Any, Optional, Tuple
 
 # Configuration
 BASE_URL = "https://berghain.challenges.listenlabs.ai"
-MAX_VENUE_CAPACITY = 1000
+MAX_VENUE_CAPACITY = 1000 + 1
 MAX_REJECTIONS = 20000
 
 
@@ -172,24 +172,31 @@ def should_accept_person(
     
     # Strategy 3: Not young BUT well_dressed
     if not is_young and is_well_dressed:
-        # If we already have enough well_dressed people, reject
+        # If we already have enough well_dressed people, still accept if venue has room
+        # (be even less rejective - accept well_dressed people more liberally)
         if well_dressed_count >= well_dressed_min:
-            return False
-        
-        # Early game: accept if we need well_dressed people
-        if venue_fill_ratio < 0.6:
-            return True
-        
-        # Mid game: be more selective, only accept if significantly below requirement
-        if venue_fill_ratio < 0.8:
-            # Accept if we're below 90% of requirement
-            if well_dressed_progress < 0.9:
+            # Early to mid game: still accept some well_dressed people even if we have enough
+            if venue_fill_ratio < 0.8:
+                return True
+            # Late game: only reject if venue is extremely full (very lenient)
+            if venue_fill_ratio < 0.98:
                 return True
             return False
         
-        # Late game: very selective, only accept if we're critically below requirement
-        # Since we don't know how many people are coming, be conservative
-        if well_dressed_progress < 0.85:
+        # Early game: accept if we need well_dressed people (more lenient)
+        if venue_fill_ratio < 0.7:
+            return True
+        
+        # Mid game: be less selective - accept more liberally
+        if venue_fill_ratio < 0.85:
+            # Accept if we're below requirement or even slightly above (more lenient)
+            if well_dressed_progress < 1.0:
+                return True
+            return False
+        
+        # Late game: be very accepting - accept if we're below requirement or moderately above
+        # Since we don't know how many people are coming, be very accepting
+        if well_dressed_progress < 1.15:
             return True
         return False
     
@@ -197,36 +204,36 @@ def should_accept_person(
     # Be kinder as the game progresses - accept young people more liberally
     if is_young:
         # If we already have enough young people, still accept if venue is not too full
-        # (be kinder as game progresses)
+        # (be even kinder - accept young people very liberally)
         if young_count >= young_min:
             # Early to mid game: still accept some young people even if we have enough
-            if venue_fill_ratio < 0.7:
+            if venue_fill_ratio < 0.8:
                 return True
-            # Late game: only reject if venue is very full
-            if venue_fill_ratio < 0.9:
+            # Late game: only reject if venue is extremely full (very lenient)
+            if venue_fill_ratio < 0.98:
                 return True
             return False
         
-        # Early game: accept young people liberally
-        if venue_fill_ratio < 0.4:
+        # Early game: accept young people liberally (more lenient)
+        if venue_fill_ratio < 0.6:
             return True
         
         # Mid game: accept more liberally as game progresses
-        if venue_fill_ratio < 0.7:
-            # Accept if we're below requirement, or even slightly above
-            if young_progress < 1.1:
-                return True
-            return False
-        
-        # Late game: be even kinder - accept young people unless we're way over requirement
-        if venue_fill_ratio < 0.9:
-            # Accept if we're not way over requirement (up to 120% of requirement)
+        if venue_fill_ratio < 0.85:
+            # Accept if we're below requirement, or even moderately above (more lenient)
             if young_progress < 1.2:
                 return True
             return False
         
-        # Very late game: still accept young people unless we're significantly over
-        if young_progress < 1.3:
+        # Late game: be very kind - accept young people unless we're significantly over requirement
+        if venue_fill_ratio < 0.98:
+            # Accept if we're not significantly over requirement (up to 140% of requirement - very lenient)
+            if young_progress < 1.4:
+                return True
+            return False
+        
+        # Very late game: still accept young people unless we're way over (very lenient)
+        if young_progress < 1.5:
             return True
         return False
     
@@ -680,6 +687,131 @@ def load_game_attempts(game_id: Optional[str] = None, filename: str = "game_atte
         return {} if not game_id else {"gameId": game_id, "attempts": []}
 
 
+def calculate_actual_statistics(decision_history: list) -> Dict[str, Any]:
+    """
+    Calculate actual relativeFrequencies and correlations from admitted people.
+    
+    Args:
+        decision_history: List of decision records with 'attributes' and 'decision' fields
+    
+    Returns:
+        Dictionary with 'relativeFrequencies' and 'correlations'
+    """
+    admitted_decisions = [d for d in decision_history if d.get("decision") == "accepted"]
+    total_admitted = len(admitted_decisions)
+    
+    if total_admitted == 0:
+        return {
+            "relativeFrequencies": {},
+            "correlations": {}
+        }
+    
+    # Get all attribute names
+    all_attributes = set()
+    for decision in admitted_decisions:
+        all_attributes.update(decision.get("attributes", {}).keys())
+    all_attributes = sorted(list(all_attributes))
+    
+    # Calculate relative frequencies
+    relative_frequencies = {}
+    for attr in all_attributes:
+        count = sum(1 for d in admitted_decisions if d.get("attributes", {}).get(attr, False))
+        relative_frequencies[attr] = count / total_admitted if total_admitted > 0 else 0.0
+    
+    # Calculate correlations
+    correlations = {}
+    for attr1 in all_attributes:
+        correlations[attr1] = {}
+        for attr2 in all_attributes:
+            if attr1 == attr2:
+                correlations[attr1][attr2] = 1.0
+            else:
+                # Calculate correlation coefficient
+                # For binary variables: corr = (P(both) - P(A)*P(B)) / sqrt(P(A)*(1-P(A))*P(B)*(1-P(B)))
+                count_both = sum(1 for d in admitted_decisions 
+                                if d.get("attributes", {}).get(attr1, False) and 
+                                   d.get("attributes", {}).get(attr2, False))
+                p_both = count_both / total_admitted if total_admitted > 0 else 0.0
+                p_a = relative_frequencies.get(attr1, 0.0)
+                p_b = relative_frequencies.get(attr2, 0.0)
+                
+                denominator = (p_a * (1 - p_a) * p_b * (1 - p_b)) ** 0.5
+                if denominator > 0:
+                    correlation = (p_both - p_a * p_b) / denominator
+                else:
+                    correlation = 0.0
+                
+                correlations[attr1][attr2] = correlation
+    
+    return {
+        "relativeFrequencies": relative_frequencies,
+        "correlations": correlations
+    }
+
+
+def evaluate_attribute_statistics(
+    actual_stats: Dict[str, Any],
+    target_stats: Dict[str, Any],
+    tolerance: float = 0.01
+) -> Dict[str, Any]:
+    """
+    Evaluate if actual statistics meet target criteria.
+    
+    Args:
+        actual_stats: Dictionary with actual 'relativeFrequencies' and 'correlations'
+        target_stats: Dictionary with target 'relativeFrequencies' and 'correlations'
+        tolerance: Tolerance for comparison (default 0.01 = 1%)
+    
+    Returns:
+        Dictionary with evaluation results similar to constraintStatus structure
+    """
+    evaluation = {
+        "relativeFrequencies": {},
+        "correlations": {},
+        "allMet": True
+    }
+    
+    # Evaluate relative frequencies
+    target_freqs = target_stats.get("relativeFrequencies", {})
+    actual_freqs = actual_stats.get("relativeFrequencies", {})
+    
+    for attr, target_freq in target_freqs.items():
+        actual_freq = actual_freqs.get(attr, 0.0)
+        diff = abs(actual_freq - target_freq)
+        met = diff <= tolerance
+        evaluation["relativeFrequencies"][attr] = {
+            "actual": actual_freq,
+            "target": target_freq,
+            "difference": diff,
+            "met": met
+        }
+        if not met:
+            evaluation["allMet"] = False
+    
+    # Evaluate correlations
+    target_corrs = target_stats.get("correlations", {})
+    actual_corrs = actual_stats.get("correlations", {})
+    
+    for attr1, attr2_dict in target_corrs.items():
+        if attr1 not in evaluation["correlations"]:
+            evaluation["correlations"][attr1] = {}
+        
+        for attr2, target_corr in attr2_dict.items():
+            actual_corr = actual_corrs.get(attr1, {}).get(attr2, 0.0)
+            diff = abs(actual_corr - target_corr)
+            met = diff <= tolerance
+            evaluation["correlations"][attr1][attr2] = {
+                "actual": actual_corr,
+                "target": target_corr,
+                "difference": diff,
+                "met": met
+            }
+            if not met:
+                evaluation["allMet"] = False
+    
+    return evaluation
+
+
 def save_leaderboard_entry(
     game_id: str,
     results: Dict[str, Any],
@@ -694,7 +826,7 @@ def save_leaderboard_entry(
         game_id: The game ID
         results: Dictionary containing game results
         constraints: List of constraints (optional)
-        attribute_statistics: Optional dictionary with 'relativeFrequencies' and 'correlations'
+        attribute_statistics: Optional dictionary with 'relativeFrequencies' and 'correlations' (target values)
         filename: Output filename for leaderboard
     """
     # Load existing leaderboard if file exists
@@ -722,6 +854,16 @@ def save_leaderboard_entry(
                 "met": current_count >= min_count
             }
     
+    # Calculate and evaluate attribute statistics
+    attribute_statistics_status = None
+    if attribute_statistics:
+        # Calculate actual statistics from decision history
+        decision_history = results.get("decisionHistory", [])
+        actual_stats = calculate_actual_statistics(decision_history)
+        
+        # Evaluate against target statistics
+        attribute_statistics_status = evaluate_attribute_statistics(actual_stats, attribute_statistics)
+    
     # Create leaderboard entry
     timestamp = datetime.now()
     entry = {
@@ -736,9 +878,13 @@ def save_leaderboard_entry(
         "totalDecisionsRecorded": len(results.get("decisionHistory", []))
     }
     
-    # Add attribute statistics if provided
+    # Add attribute statistics (target values)
     if attribute_statistics:
         entry["attributeStatistics"] = attribute_statistics
+    
+    # Add attribute statistics evaluation
+    if attribute_statistics_status:
+        entry["attributeStatisticsStatus"] = attribute_statistics_status
     
     # Add to leaderboard
     leaderboard.append(entry)
