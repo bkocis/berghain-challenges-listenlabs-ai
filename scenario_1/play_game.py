@@ -176,27 +176,27 @@ def should_accept_person(
         # (be maximally lenient - accept well_dressed people almost always)
         if well_dressed_count >= well_dressed_min:
             # Early to mid game: still accept some well_dressed people even if we have enough
-            if venue_fill_ratio < 0.90:
+            if venue_fill_ratio < 0.99:
                 return True
             # Late game: only reject if venue is completely full (maximally lenient)
-            if venue_fill_ratio < 0.995:
+            if venue_fill_ratio < 0.9999:
                 return True
             return False
         
         # Early game: accept if we need well_dressed people (maximally lenient)
-        if venue_fill_ratio < 0.80:
+        if venue_fill_ratio < 0.95:
             return True
         
         # Mid game: be maximally accepting - accept more liberally
-        if venue_fill_ratio < 0.95:
-            # Accept if we're below requirement or even significantly above (maximally lenient)
-            if well_dressed_progress < 1.10:
+        if venue_fill_ratio < 0.999:
+            # Accept if we're below requirement or even very extremely above (maximally lenient)
+            if well_dressed_progress < 1.25:
                 return True
             return False
         
-        # Late game: be maximally accepting - accept if we're below requirement or very significantly above
+        # Late game: be maximally accepting - accept if we're below requirement or extremely above
         # Since we don't know how many people are coming, be maximally accepting
-        if well_dressed_progress < 1.35:
+        if well_dressed_progress < 1.65:
             return True
         return False
     
@@ -207,33 +207,33 @@ def should_accept_person(
         # (be maximally kind - accept young people almost always)
         if young_count >= young_min:
             # Early to mid game: still accept some young people even if we have enough
-            if venue_fill_ratio < 0.90:
+            if venue_fill_ratio < 0.99:
                 return True
             # Late game: only reject if venue is completely full (maximally lenient)
-            if venue_fill_ratio < 0.995:
+            if venue_fill_ratio < 0.9999:
                 return True
             return False
         
         # Early game: accept young people liberally (maximally lenient)
-        if venue_fill_ratio < 0.70:
+        if venue_fill_ratio < 0.85:
             return True
         
         # Mid game: accept more liberally as game progresses
-        if venue_fill_ratio < 0.95:
-            # Accept if we're below requirement, or even very significantly above (maximally lenient)
-            if young_progress < 1.30:
+        if venue_fill_ratio < 0.999:
+            # Accept if we're below requirement, or even extremely above (maximally lenient)
+            if young_progress < 1.45:
                 return True
             return False
         
         # Late game: be maximally kind - accept young people unless we're extremely over requirement
-        if venue_fill_ratio < 0.995:
-            # Accept if we're not extremely over requirement (up to 160% of requirement - maximally lenient)
-            if young_progress < 1.6:
+        if venue_fill_ratio < 0.9999:
+            # Accept if we're not extremely over requirement (up to 190% of requirement - maximally lenient)
+            if young_progress < 1.9:
                 return True
             return False
         
         # Very late game: still accept young people unless we're extremely over (maximally lenient)
-        if young_progress < 1.7:
+        if young_progress < 2.0:
             return True
         return False
     
