@@ -1,5 +1,90 @@
 [
   {
+    "gameId": "acdc8386-1569-46f4-b375-a239e980ad3a",
+    "date": "2025-12-25T10:34:49.538919",
+    "dateReadable": "2025-12-25 10:34:49",
+    "status": "completed",
+    "admitted": 999,
+    "rejected": 1036,
+    "totalProcessed": 2035,
+    "constraintStatus": {
+      "young": {
+        "count": 645,
+        "minRequired": 600,
+        "met": true
+      },
+      "well_dressed": {
+        "count": 660,
+        "minRequired": 600,
+        "met": true
+      }
+    },
+    "totalDecisionsRecorded": 2036,
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "well_dressed": 0.3225,
+        "young": 0.3225
+      },
+      "correlations": {
+        "well_dressed": {
+          "well_dressed": 1,
+          "young": 0.18304299322062992
+        },
+        "young": {
+          "well_dressed": 0.18304299322062992,
+          "young": 1
+        }
+      }
+    },
+    "attributeStatisticsStatus": {
+      "relativeFrequencies": {
+        "well_dressed": {
+          "actual": 0.66,
+          "target": 0.3225,
+          "difference": 0.3375,
+          "met": false
+        },
+        "young": {
+          "actual": 0.645,
+          "target": 0.3225,
+          "difference": 0.3225,
+          "met": false
+        }
+      },
+      "correlations": {
+        "well_dressed": {
+          "well_dressed": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "young": {
+            "actual": -0.5324781727575668,
+            "target": 0.18304299322062992,
+            "difference": 0.7155211659781967,
+            "met": false
+          }
+        },
+        "young": {
+          "well_dressed": {
+            "actual": -0.5324781727575668,
+            "target": 0.18304299322062992,
+            "difference": 0.7155211659781967,
+            "met": false
+          },
+          "young": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          }
+        }
+      },
+      "allMet": false
+    }
+  },
+  {
     "gameId": "f17da768-30a5-4fb9-89da-53fa6c4f6bba",
     "date": "2025-12-25T01:27:48.542642",
     "dateReadable": "2025-12-25 01:27:48",
