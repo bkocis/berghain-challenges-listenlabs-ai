@@ -1,0 +1,1142 @@
+{
+  "7c82ee5f-f68c-4bed-8242-a3c1ebf5dd56": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "7c82ee5f-f68c-4bed-8242-a3c1ebf5dd56",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "d87d8577-d63c-4e2e-a4a6-590782070550": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "d87d8577-d63c-4e2e-a4a6-590782070550",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "13995665-2da1-4e0d-b314-ce0706c6fcc0": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "13995665-2da1-4e0d-b314-ce0706c6fcc0",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "709917c5-d412-4a6c-b273-709eee318fbc": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "709917c5-d412-4a6c-b273-709eee318fbc",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "060da77e-fa32-4594-a053-c32f159abc8e": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "060da77e-fa32-4594-a053-c32f159abc8e",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "7e6c01a2-534a-4152-bcc1-ef64ff7fd0d7": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "7e6c01a2-534a-4152-bcc1-ef64ff7fd0d7",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "2c0577d6-d11a-4ae1-acd4-a07417dcfbba": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "2c0577d6-d11a-4ae1-acd4-a07417dcfbba",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "bafbcaea-5d05-4689-a339-95e355215794": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "bafbcaea-5d05-4689-a339-95e355215794",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "a2110bb0-0532-43a3-9b4c-cd8b3a7116bb": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "a2110bb0-0532-43a3-9b4c-cd8b3a7116bb",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "200f2dd6-9233-40a1-b8eb-3f9fe2854d12": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "200f2dd6-9233-40a1-b8eb-3f9fe2854d12",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "bf261d43-512c-4650-a39a-3190ecd3bc49": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "bf261d43-512c-4650-a39a-3190ecd3bc49",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "07ef076b-bb0d-490c-9655-d50b6e67ccd8": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "07ef076b-bb0d-490c-9655-d50b6e67ccd8",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "decd07fe-12c6-430a-b6de-f0cb21d61323": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "decd07fe-12c6-430a-b6de-f0cb21d61323",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "f0d90519-b516-4b3e-aa42-7e826050238d": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "f0d90519-b516-4b3e-aa42-7e826050238d",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "c6ba7f77-9c21-4f49-8a83-cef1105007e1": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "c6ba7f77-9c21-4f49-8a83-cef1105007e1",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "177217bc-65ce-4860-928b-334a410a31ef": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "177217bc-65ce-4860-928b-334a410a31ef",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "f1e387d2-e7a9-47d9-b49a-384175600389": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "f1e387d2-e7a9-47d9-b49a-384175600389",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "1309ec4c-7186-4f08-ba77-351dfe3496ff": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "1309ec4c-7186-4f08-ba77-351dfe3496ff",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "746f49c0-6ea3-45c1-ad49-ce204bfb15e8": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "746f49c0-6ea3-45c1-ad49-ce204bfb15e8",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  },
+  "70f45ad4-4fc1-4142-8b2b-966df62c68b7": {
+    "playerId": "88539b16-3002-47ff-a234-10d9474cbb9c",
+    "scenarioId": 2,
+    "gameId": "70f45ad4-4fc1-4142-8b2b-966df62c68b7",
+    "constraints": [
+      {
+        "attribute": "techno_lover",
+        "minCount": 650
+      },
+      {
+        "attribute": "well_connected",
+        "minCount": 450
+      },
+      {
+        "attribute": "creative",
+        "minCount": 300
+      },
+      {
+        "attribute": "berlin_local",
+        "minCount": 750
+      }
+    ],
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    }
+  }
+}
