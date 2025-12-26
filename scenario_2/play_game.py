@@ -119,7 +119,8 @@ def should_accept_person(
     admitted_count: int,
     attribute_counts: Dict[str, int],
     total_admitted: int,
-    attribute_statistics: Optional[Dict[str, Any]] = None
+    attribute_statistics: Optional[Dict[str, Any]] = None,
+    well_connected_encountered: int = 0
 ) -> bool:
     """
     Decision logic: determine whether to accept or reject a person.
@@ -486,6 +487,37 @@ def should_accept_person(
     # Accepting well_connected can help us get berlin_local too
     # However, well_connected ↔ techno_lover: -0.47 (moderate negative)
     if is_well_connected:
+        # STRATEGY: Accept every second well_connected person to slow venue filling
+        # This allows more time to search for rare creative people
+        # well_connected_encountered tracks total encounters (not just admitted)
+        # We'll skip 1st, accept 2nd, skip 3rd, accept 4th, etc.
+        # So: accept when well_connected_encountered % 2 == 0 (and counter > 0)
+        # Counter values: 1st=1 (skip), 2nd=2 (accept), 3rd=3 (skip), 4th=4 (accept)...
+        if well_connected_encountered > 0 and well_connected_encountered % 2 == 0:
+            # This is an even-numbered well_connected person (2nd, 4th, 6th...)
+            # Only accept if we still need well_connected or if it helps with other constraints
+            if well_connected_count < well_connected_min:
+                # Still need well_connected - accept this one
+                pass  # Continue to normal logic below
+            elif berlin_deficit > 50 and venue_fill_ratio < 0.9:
+                # Need berlin_local and well_connected helps (positive correlation)
+                # Accept if venue has room
+                return True
+            else:
+                # Already have enough well_connected and don't need berlin_local urgently
+                # Reject to save space for creative people
+                return False
+        elif well_connected_encountered > 0:
+            # This is an odd-numbered well_connected person (1st, 3rd, 5th...)
+            # Skip/reject to slow venue filling and allow more search time for creatives
+            # Only make exception if we're critically behind on well_connected
+            if well_connected_count < well_connected_min * 0.5:
+                # Very far behind (less than 50% of target) - accept even skipped ones
+                pass  # Continue to normal logic below
+            else:
+                # Skip this one to save space and allow longer search for creatives
+                return False
+        
         # CORRELATION-BASED: If we need berlin_local, well_connected people are more likely to have it
         # This makes well_connected more valuable when we need berlin_local
         if well_connected_count < well_connected_min:
@@ -605,6 +637,9 @@ def play_game(
     attribute_counts = {}  # Track how many of each attribute we have
     status = "running"
     
+    # Track well_connected encounters (for skip-every-second strategy)
+    well_connected_encountered = 0
+    
     # Track all decisions: person attributes and accept/reject decisions
     decision_history = []
     
@@ -635,11 +670,28 @@ def play_game(
         admitted_count = response.get("admittedCount", admitted_count)
         rejected_count = response.get("rejectedCount", rejected_count)
         
+        # Track well_connected encounters (before decision, to count all encounters)
+        if attributes.get("well_connected", False):
+            well_connected_encountered += 1
+        
         # Make decision for current person
         # Check if decision_strategy accepts attribute_statistics parameter
         import inspect
         sig = inspect.signature(decision_strategy)
-        if 'attribute_statistics' in sig.parameters:
+        has_attr_stats = 'attribute_statistics' in sig.parameters
+        has_well_conn_counter = 'well_connected_encountered' in sig.parameters
+        
+        if has_attr_stats and has_well_conn_counter:
+            accept = decision_strategy(
+                attributes,
+                constraints,
+                admitted_count,
+                attribute_counts,
+                admitted_count + rejected_count,
+                attribute_statistics,
+                well_connected_encountered
+            )
+        elif has_attr_stats:
             accept = decision_strategy(
                 attributes,
                 constraints,
@@ -648,8 +700,18 @@ def play_game(
                 admitted_count + rejected_count,
                 attribute_statistics
             )
+        elif has_well_conn_counter:
+            accept = decision_strategy(
+                attributes,
+                constraints,
+                admitted_count,
+                attribute_counts,
+                admitted_count + rejected_count,
+                None,
+                well_connected_encountered
+            )
         else:
-            # Fallback for strategies that don't use attribute_statistics
+            # Fallback for strategies that don't use attribute_statistics or counter
             accept = decision_strategy(
                 attributes,
                 constraints,
