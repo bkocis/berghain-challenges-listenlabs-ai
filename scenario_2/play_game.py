@@ -156,6 +156,66 @@ def should_accept_person(
     Returns:
         True to accept, False to reject
     """
+    # ============================================================================
+    # TUNABLE PARAMETERS - Adjust these values to fine-tune decision strategy
+    # ============================================================================
+    
+    # Venue fill ratio thresholds (0.0 to 1.0) - when to accept/reject based on capacity
+    VENUE_FILL_CRITICAL = 0.99      # Very late game - accept until 99% full
+    VENUE_FILL_LATE = 0.97          # Late game - accept until 97% full
+    VENUE_FILL_MID_LATE = 0.95      # Mid-late game - accept until 95% full
+    VENUE_FILL_MID = 0.9            # Mid game - accept until 90% full
+    VENUE_FILL_MID_EARLY = 0.85     # Mid-early game - accept until 85% full
+    VENUE_FILL_EARLY = 0.8          # Early game - accept until 80% full
+    VENUE_FILL_MODERATE = 0.75      # Moderate fill - accept until 75% full
+    VENUE_FILL_LOW = 0.7            # Low fill - accept until 70% full
+    VENUE_FILL_VERY_LOW = 0.65      # Very low fill - accept until 65% full
+    VENUE_FILL_MINIMAL = 0.6        # Minimal fill - accept until 60% full
+    VENUE_FILL_VERY_MINIMAL = 0.5  # Very minimal fill - accept until 50% full
+    VENUE_FILL_EMPTY = 0.05         # Empty venue - accept if under 5% full
+    VENUE_FILL_VERY_EMPTY = 0.02    # Very empty - accept if under 2% full
+    VENUE_FILL_EXTREMELY_EMPTY = 0.005  # Extremely empty - accept if under 0.5% full
+    VENUE_FILL_ULTRA_EMPTY = 0.002      # Ultra empty - accept if under 0.2% full
+    
+    # Deficit thresholds - when to adjust behavior based on how far behind we are
+    DEFICIT_VERY_HIGH = 200         # Very high deficit threshold
+    DEFICIT_HIGH = 150              # High deficit threshold
+    DEFICIT_MODERATE_HIGH = 100     # Moderate-high deficit threshold
+    DEFICIT_MODERATE = 50           # Moderate deficit threshold
+    DEFICIT_LOW = 20                # Low deficit threshold
+    DEFICIT_VERY_LOW = 15           # Very low deficit threshold
+    DEFICIT_MINIMAL = 10            # Minimal deficit threshold
+    DEFICIT_TINY = 8                # Tiny deficit threshold
+    DEFICIT_MICRO = 5               # Micro deficit threshold
+    
+    # Over-target multipliers - how much over target to allow before rejecting
+    OVER_TARGET_HIGH = 1.1          # Allow 20% over target (for creative)
+    OVER_TARGET_MODERATE = 1.1      # Allow 10% over target (for most attributes)
+    
+    # Well_connected skip strategy parameters
+    WELL_CONNECTED_SKIP_MODULO = 5  # Accept every Nth well_connected person
+    WELL_CONNECTED_CRITICAL_RATIO = 0.3  # Accept skipped ones if under this % of target
+    
+    # Multi-attribute thresholds
+    MIN_ATTRIBUTES_FOR_STRATEGY_2 = 3  # Minimum attributes for Strategy 2
+    MIN_NEEDED_ATTRIBUTES = 2          # Minimum needed attributes for Strategy 3
+    MIN_CRITICAL_ATTRIBUTES = 2         # Minimum critical attributes needed
+    
+    # Default correlation values (fallbacks if not in attribute_statistics)
+    DEFAULT_TECH_BERLIN_CORR = -0.65    # techno_lover ↔ berlin_local correlation
+    DEFAULT_WELL_BERLIN_CORR = 0.57     # well_connected ↔ berlin_local correlation
+    DEFAULT_TECH_WELL_CORR = -0.47      # techno_lover ↔ well_connected correlation
+    
+    # Default constraint minimums (fallbacks if not in constraints)
+    DEFAULT_TECHNO_MIN = 650
+    DEFAULT_WELL_CONNECTED_MIN = 450
+    DEFAULT_CREATIVE_MIN = 300
+    DEFAULT_BERLIN_LOCAL_MIN = 750
+    
+    # ============================================================================
+    # END OF TUNABLE PARAMETERS
+    # ============================================================================
+    
     # If venue is full, reject
     if admitted_count >= MAX_VENUE_CAPACITY:
         return False
@@ -171,10 +231,10 @@ def should_accept_person(
     for constraint in constraints:
         constraint_mins[constraint['attribute']] = constraint['minCount']
     
-    techno_min = constraint_mins.get("techno_lover", 650)
-    well_connected_min = constraint_mins.get("well_connected", 450)
-    creative_min = constraint_mins.get("creative", 300)
-    berlin_local_min = constraint_mins.get("berlin_local", 750)
+    techno_min = constraint_mins.get("techno_lover", DEFAULT_TECHNO_MIN)
+    well_connected_min = constraint_mins.get("well_connected", DEFAULT_WELL_CONNECTED_MIN)
+    creative_min = constraint_mins.get("creative", DEFAULT_CREATIVE_MIN)
+    berlin_local_min = constraint_mins.get("berlin_local", DEFAULT_BERLIN_LOCAL_MIN)
     
     # Get current counts
     techno_count = attribute_counts.get("techno_lover", 0)
@@ -189,11 +249,11 @@ def should_accept_person(
     
     # Key correlations for decision making:
     # techno_lover ↔ berlin_local: -0.65 (strong negative - rare to have both)
-    tech_berlin_corr = correlations.get("techno_lover", {}).get("berlin_local", -0.65)
+    tech_berlin_corr = correlations.get("techno_lover", {}).get("berlin_local", DEFAULT_TECH_BERLIN_CORR)
     # well_connected ↔ berlin_local: +0.57 (strong positive - helps get berlin_local)
-    well_berlin_corr = correlations.get("well_connected", {}).get("berlin_local", 0.57)
+    well_berlin_corr = correlations.get("well_connected", {}).get("berlin_local", DEFAULT_WELL_BERLIN_CORR)
     # techno_lover ↔ well_connected: -0.47 (moderate negative)
-    tech_well_corr = correlations.get("techno_lover", {}).get("well_connected", -0.47)
+    tech_well_corr = correlations.get("techno_lover", {}).get("well_connected", DEFAULT_TECH_WELL_CORR)
     
     # Calculate progress towards constraints (0.0 to 1.0+)
     techno_progress = techno_count / techno_min if techno_min > 0 else 1.0
@@ -235,28 +295,29 @@ def should_accept_person(
     has_well_berlin_combo = is_well_connected and is_berlin_local
     
     # Strategy 1: Always accept creative people (too rare - only 6.23% frequency)
-    # This is CRITICAL - we need 300 creative out of 1000 admits, but only 6.23% have it
-    # We MUST accept ALL creative people until we have 300, even if venue is full
-    # We'll reject others to make room if needed
+    # This is CRITICAL - we need at least 300 people with creative attribute
+    # (these 300 can also have other attributes like well_connected, techno_lover, etc.)
+    # Since only 6.23% of population has creative, we MUST accept ALL creative people
+    # until we have 300, even if venue is full. We'll reject others to make room if needed
     if is_creative:
         # ALWAYS accept until we reach the minimum (300)
-        # This is the rarest attribute and we need 30% of admits to have it
+        # This is the rarest attribute and we need at least 300 people with it
         # NEVER reject a creative person until we have 300, even if venue is 100% full
         if creative_count < creative_min:
             return True
         
         # If we already have enough creative (300+), still accept if venue has room
         # Creative people are valuable, but be more selective once we hit target
-        if venue_fill_ratio < 0.99:
+        if venue_fill_ratio < VENUE_FILL_CRITICAL:
             return True
         # Only reject if venue is 99%+ full and we're significantly over target
-        if creative_count < creative_min * 1.2:  # Allow up to 20% over
+        if creative_count < creative_min * OVER_TARGET_HIGH:  # Allow up to 20% over
             return True
         return False
     
     # Strategy 2: Accept people with multiple attributes (even if some are already met)
     # People with 3+ attributes are valuable, but prioritize those with critical attributes we need
-    if total_attributes >= 3:
+    if total_attributes >= MIN_ATTRIBUTES_FOR_STRATEGY_2:
         # CORRELATION-BASED: Prioritize rare techno_lover + berlin_local combination
         # This is extremely rare (correlation -0.65) and highly valuable
         if has_rare_tech_berlin_combo:
@@ -266,7 +327,7 @@ def should_accept_person(
                 # Need at least one - always accept
                 return True
             # Both met, but still valuable - accept unless venue is 99%+ full
-            if venue_fill_ratio < 0.99:
+            if venue_fill_ratio < VENUE_FILL_CRITICAL:
                 return True
             return False
         
@@ -278,15 +339,15 @@ def should_accept_person(
         # If they have critical attributes we need, accept more freely
         if has_needed_creative or has_needed_berlin or has_needed_techno:
             # Accept if venue is not 99%+ full
-            if venue_fill_ratio < 0.99:
+            if venue_fill_ratio < VENUE_FILL_CRITICAL:
                 return True
             # Very late game: only reject if we're way over on ALL their critical attributes
             all_critical_over = True
-            if has_needed_techno and techno_count < techno_min * 1.1:
+            if has_needed_techno and techno_count < techno_min * OVER_TARGET_MODERATE:
                 all_critical_over = False
-            if has_needed_berlin and berlin_local_count < berlin_local_min * 1.1:
+            if has_needed_berlin and berlin_local_count < berlin_local_min * OVER_TARGET_MODERATE:
                 all_critical_over = False
-            if has_needed_creative and creative_count < creative_min * 1.1:
+            if has_needed_creative and creative_count < creative_min * OVER_TARGET_MODERATE:
                 all_critical_over = False
             if not all_critical_over:
                 return True
@@ -298,7 +359,7 @@ def should_accept_person(
         creative_deficit = creative_min - creative_count
         
         # If we're behind on creative, reject all to save space
-        if creative_deficit > 50:
+        if creative_deficit > DEFICIT_MODERATE:
             return False
         
         # Unless they have well_connected - then reject even more aggressively
@@ -307,18 +368,18 @@ def should_accept_person(
             if well_connected_count >= well_connected_min:
                 return False
             # Only accept if venue is extremely empty
-            if venue_fill_ratio < 0.02:
+            if venue_fill_ratio < VENUE_FILL_VERY_EMPTY:
                 return True
             return False
         
         # Only accept if venue is very empty (early game)
-        if venue_fill_ratio < 0.05:
+        if venue_fill_ratio < VENUE_FILL_EMPTY:
             return True
         return False
     
     # Strategy 3: Accept people with 2+ needed attributes
     # These are valuable, prioritize those with critical attributes we need
-    if needed_attributes >= 2:
+    if needed_attributes >= MIN_NEEDED_ATTRIBUTES:
         # CORRELATION-BASED: Prioritize rare techno_lover + berlin_local combination
         # This is extremely rare (correlation -0.65) - if we need both, ALWAYS accept
         if has_rare_tech_berlin_combo:
@@ -327,7 +388,7 @@ def should_accept_person(
                 return True
             # Need at least one - still very valuable
             if techno_count < techno_min or berlin_local_count < berlin_local_min:
-                if venue_fill_ratio < 0.99:
+                if venue_fill_ratio < VENUE_FILL_CRITICAL:
                     return True
                 return False
         
@@ -337,10 +398,10 @@ def should_accept_person(
             if berlin_local_count < berlin_local_min:
                 # Need berlin_local - well_connected helps (positive correlation)
                 # Accept more freely since this combo is more common
-                if venue_fill_ratio < 0.95:
+                if venue_fill_ratio < VENUE_FILL_MID_LATE:
                     return True
                 # Late game: only if we still need berlin_local
-                if berlin_local_count < berlin_local_min * 1.1:
+                if berlin_local_count < berlin_local_min * OVER_TARGET_MODERATE:
                     return True
                 return False
         
@@ -350,9 +411,9 @@ def should_accept_person(
         has_needed_techno = is_techno_lover and techno_count < techno_min
         critical_needed = sum([has_needed_creative, has_needed_berlin, has_needed_techno])
         
-        if critical_needed >= 2:
+        if critical_needed >= MIN_CRITICAL_ATTRIBUTES:
             # Both are critical - accept until venue is 99%+ full
-            if venue_fill_ratio < 0.99:
+            if venue_fill_ratio < VENUE_FILL_CRITICAL:
                 return True
             return False
         
@@ -362,24 +423,24 @@ def should_accept_person(
             creative_deficit = creative_min - creative_count
             
             # If we're far behind on creative, be more selective to save space
-            if creative_deficit > 100:
-                if venue_fill_ratio < 0.7:
+            if creative_deficit > DEFICIT_MODERATE_HIGH:
+                if venue_fill_ratio < VENUE_FILL_LOW:
                     return True
                 return False
             # If we're moderately behind on creative, be somewhat selective
-            if creative_deficit > 50:
-                if venue_fill_ratio < 0.85:
+            if creative_deficit > DEFICIT_MODERATE:
+                if venue_fill_ratio < VENUE_FILL_MID_EARLY:
                     return True
                 return False
             # Otherwise, accept more freely
-            if venue_fill_ratio < 0.95:
+            if venue_fill_ratio < VENUE_FILL_MID_LATE:
                 return True
             # Late game: only accept if we're not way over on their critical attributes
-            if has_needed_techno and techno_count >= techno_min * 1.1:
+            if has_needed_techno and techno_count >= techno_min * OVER_TARGET_MODERATE:
                 return False
-            if has_needed_berlin and berlin_local_count >= berlin_local_min * 1.1:
+            if has_needed_berlin and berlin_local_count >= berlin_local_min * OVER_TARGET_MODERATE:
                 return False
-            if has_needed_creative and creative_count >= creative_min * 1.1:
+            if has_needed_creative and creative_count >= creative_min * OVER_TARGET_MODERATE:
                 return False
             return True
         
@@ -389,7 +450,7 @@ def should_accept_person(
         if is_well_connected and well_connected_count >= well_connected_min:
             return False
         
-        if venue_fill_ratio < 0.05:
+        if venue_fill_ratio < VENUE_FILL_EMPTY:
             return True
         return False
     
@@ -400,7 +461,9 @@ def should_accept_person(
     # CORRELATION INSIGHT: techno_lover ↔ berlin_local: -0.65 (strong negative)
     # This means techno_lover people WON'T help us get berlin_local
     # We MUST be very aggressive about accepting berlin_local separately
-    # This is CRITICAL - we need 750 out of 1000 (75%), but only 39.8% of population has it
+    # This is CRITICAL - we need at least 750 people with berlin_local attribute
+    # (these 750 can also have other attributes like well_connected, techno_lover, etc.)
+    # Since only 39.8% of population has berlin_local, we need to be aggressive
     if is_berlin_local:
         # ALWAYS accept until we reach the minimum (750)
         # Since techno_lover and berlin_local are negatively correlated,
@@ -408,15 +471,15 @@ def should_accept_person(
         # We need to accept berlin_local people aggressively
         if berlin_local_count < berlin_local_min:
             # Account for creative deficit (still prioritize creative)
-            if creative_deficit > 100:
+            if creative_deficit > DEFICIT_MODERATE_HIGH:
                 # Still accept, but only if venue is not too full
                 # This keeps venue from filling up, allowing us to search longer for creative
-                if venue_fill_ratio < 0.6:
+                if venue_fill_ratio < VENUE_FILL_MINIMAL:
                     return True
                 return False
-            if creative_deficit > 50:
+            if creative_deficit > DEFICIT_MODERATE:
                 # Accept if venue is not too full
-                if venue_fill_ratio < 0.75:
+                if venue_fill_ratio < VENUE_FILL_MODERATE:
                     return True
                 return False
             # Otherwise, always accept - we need berlin_local and can't rely on techno_lover people
@@ -424,10 +487,10 @@ def should_accept_person(
         
         # If we already have enough berlin_local (750+), still accept if venue has room
         # Berlin_local people are valuable, but be more selective once we hit target
-        if venue_fill_ratio < 0.97:
+        if venue_fill_ratio < VENUE_FILL_LATE:
             return True
         # Late game: only reject if venue is 97%+ full and we're significantly over target
-        if berlin_local_count < berlin_local_min * 1.1:  # Allow up to 10% over
+        if berlin_local_count < berlin_local_min * OVER_TARGET_MODERATE:  # Allow up to 10% over
             return True
         return False
     
@@ -442,42 +505,42 @@ def should_accept_person(
             # CORRELATION-BASED: Since techno_lover and berlin_local are negatively correlated,
             # if we're far behind on berlin_local, be more selective with techno_lover
             # This ensures we leave room for berlin_local people (who won't have techno_lover)
-            if berlin_deficit > 200:
+            if berlin_deficit > DEFICIT_VERY_HIGH:
                 # Very far behind on berlin_local - be selective to save space
                 # We need to accept berlin_local people separately (they won't have techno_lover)
-                if venue_fill_ratio < 0.6:
+                if venue_fill_ratio < VENUE_FILL_MINIMAL:
                     return True
                 return False
             
             # If we're far behind on creative, be VERY selective to save space
-            if creative_deficit > 100:
+            if creative_deficit > DEFICIT_MODERATE_HIGH:
                 # Only accept if venue is not too full (early/mid game)
                 # This keeps venue from filling up, allowing us to search longer
-                if venue_fill_ratio < 0.5:
+                if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL:
                     return True
                 return False
             # If we're moderately behind on creative, be selective
-            if creative_deficit > 50:
+            if creative_deficit > DEFICIT_MODERATE:
                 # Accept if venue is not too full
-                if venue_fill_ratio < 0.65:
+                if venue_fill_ratio < VENUE_FILL_VERY_LOW:
                     return True
                 return False
             # If we're far behind on berlin_local, be somewhat selective
-            if berlin_deficit > 150:
+            if berlin_deficit > DEFICIT_HIGH:
                 # Accept if venue is not too full
-                if venue_fill_ratio < 0.75:
+                if venue_fill_ratio < VENUE_FILL_MODERATE:
                     return True
                 return False
             # Otherwise, accept more freely - we need techno_lovers too
-            if venue_fill_ratio < 0.85:
+            if venue_fill_ratio < VENUE_FILL_MID_EARLY:
                 return True
             return False
         
         # If we already have enough techno_lover (650+), be selective
         # Only accept if we're close to meeting critical constraints
-        if creative_deficit < 50 and berlin_deficit < 100:
+        if creative_deficit < DEFICIT_MODERATE and berlin_deficit < DEFICIT_MODERATE_HIGH:
             # And venue is not too full
-            if venue_fill_ratio < 0.9:
+            if venue_fill_ratio < VENUE_FILL_MID:
                 return True
         return False
     
@@ -493,13 +556,13 @@ def should_accept_person(
         # We'll skip 1st, skip 2nd, accept 3rd, skip 4th, skip 5th, accept 6th, etc.
         # So: accept when well_connected_encountered % 3 == 0 (and counter > 0)
         # Counter values: 1st=1 (skip), 2nd=2 (skip), 3rd=3 (accept), 4th=4 (skip), 5th=5 (skip), 6th=6 (accept)...
-        if well_connected_encountered > 0 and well_connected_encountered % 4 == 0:
+        if well_connected_encountered > 0 and well_connected_encountered % WELL_CONNECTED_SKIP_MODULO == 0:
             # This is every third well_connected person (3rd, 6th, 9th...)
             # Only accept if we still need well_connected or if it helps with other constraints
             if well_connected_count < well_connected_min:
                 # Still need well_connected - accept this one
                 pass  # Continue to normal logic below
-            elif berlin_deficit > 50 and venue_fill_ratio < 0.9:
+            elif berlin_deficit > DEFICIT_MODERATE and venue_fill_ratio < VENUE_FILL_MID:
                 # Need berlin_local and well_connected helps (positive correlation)
                 # Accept if venue has room
                 return True
@@ -511,7 +574,7 @@ def should_accept_person(
             # This is not every third well_connected person (1st, 2nd, 4th, 5th, 7th, 8th...)
             # Skip/reject to slow venue filling and allow more search time for creatives
             # Only make exception if we're critically behind on well_connected
-            if well_connected_count < well_connected_min * 0.4:
+            if well_connected_count < well_connected_min * WELL_CONNECTED_CRITICAL_RATIO:
                 # Very far behind (less than 40% of target) - accept even skipped ones
                 pass  # Continue to normal logic below
             else:
@@ -522,48 +585,48 @@ def should_accept_person(
         # This makes well_connected more valuable when we need berlin_local
         if well_connected_count < well_connected_min:
             # Need well_connected - leverage positive correlation with berlin_local
-            if berlin_deficit > 100:
+            if berlin_deficit > DEFICIT_MODERATE_HIGH:
                 # Far behind on berlin_local - well_connected helps (positive correlation)
                 # Accept more freely since they're likely to also have berlin_local
-                if creative_deficit > 100:
+                if creative_deficit > DEFICIT_MODERATE_HIGH:
                     # But still prioritize creative - be selective
-                    if venue_fill_ratio < 0.6:
+                    if venue_fill_ratio < VENUE_FILL_MINIMAL:
                         return True
                     return False
-                if creative_deficit > 50:
-                    if venue_fill_ratio < 0.75:
+                if creative_deficit > DEFICIT_MODERATE:
+                    if venue_fill_ratio < VENUE_FILL_MODERATE:
                         return True
                     return False
                 # Accept more freely since well_connected helps berlin_local
-                if venue_fill_ratio < 0.85:
+                if venue_fill_ratio < VENUE_FILL_MID_EARLY:
                     return True
                 return False
             
             # Not far behind on berlin_local - standard logic
-            if creative_deficit > 50:
+            if creative_deficit > DEFICIT_MODERATE:
                 # Behind on creative - reject to save space
                 return False
             
             # Accept if we're not far behind on critical constraints
-            if creative_deficit < 10 and berlin_deficit < 20 and techno_deficit < 15:
+            if creative_deficit < DEFICIT_MINIMAL and berlin_deficit < DEFICIT_LOW and techno_deficit < DEFICIT_VERY_LOW:
                 # And venue is not too full
-                if venue_fill_ratio < 0.8:
+                if venue_fill_ratio < VENUE_FILL_EARLY:
                     return True
             return False
         
         # Already have enough well_connected - be more selective
         # But still consider if they might help with berlin_local (positive correlation)
-        if berlin_deficit > 50:
+        if berlin_deficit > DEFICIT_MODERATE:
             # Still need berlin_local - well_connected people are more likely to have it
             # Accept if venue has room and we're not way over on well_connected
-            if well_connected_count < well_connected_min * 1.2:
-                if venue_fill_ratio < 0.9:
+            if well_connected_count < well_connected_min * OVER_TARGET_HIGH:
+                if venue_fill_ratio < VENUE_FILL_MID:
                     return True
         
         # Already have enough well_connected and berlin_local is close
         # Reject almost all - only accept in very early game
-        if venue_fill_ratio < 0.05:
-            if creative_deficit < 5 and berlin_deficit < 10 and techno_deficit < 8:
+        if venue_fill_ratio < VENUE_FILL_EMPTY:
+            if creative_deficit < DEFICIT_MICRO and berlin_deficit < DEFICIT_MINIMAL and techno_deficit < DEFICIT_TINY:
                 return True
         return False
     
@@ -577,21 +640,21 @@ def should_accept_person(
         
         # If we're behind on creative, reject almost all non-creative people
         # to save space for creative people and allow us to process more people
-        if creative_deficit > 50:
+        if creative_deficit > DEFICIT_MODERATE:
             # Reject all - we need to save every spot for creative people
             # This keeps venue from filling up, allowing us to search longer
             return False
         
         # If we're moderately behind on creative, be very selective
-        if creative_deficit > 20:
+        if creative_deficit > DEFICIT_LOW:
             # Only accept if venue is extremely empty (very early game)
-            if venue_fill_ratio < 0.002:
+            if venue_fill_ratio < VENUE_FILL_ULTRA_EMPTY:
                 return True
             return False
         
         # If we're close on creative, still be very selective
         # Only accept in extremely early game if venue is very empty
-        if venue_fill_ratio < 0.005:
+        if venue_fill_ratio < VENUE_FILL_EXTREMELY_EMPTY:
             return True
         # Reject everyone else - we need the space for critical attributes
         return False
