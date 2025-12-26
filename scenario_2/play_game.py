@@ -253,13 +253,45 @@ def should_accept_person(
             return True
         return False
     
-    # CRITICAL: If we haven't met the creative target yet, reject EVERYONE else
-    # This ensures we save space for creative people and don't fill the venue
-    # Only accept others once we've reached the creative minimum (300)
+    # CRITICAL: If we haven't met the creative target yet, be VERY restrictive
+    # But still allow people who help with OTHER critical constraints (berlin_local, techno_lover)
+    # We need to balance ALL constraints, not just creative
     if creative_count < creative_min:
-        # We're behind on creative - reject all non-creative people to save space
-        # This keeps the venue from filling up, allowing us to process more people
-        # and find more creative people
+        # We're behind on creative - reject people who don't help with critical constraints
+        # But still accept people who help with berlin_local or techno_lover (we need those too!)
+        
+        # Accept if they help with berlin_local (critical - need 750)
+        if is_berlin_local and berlin_local_count < berlin_local_min:
+            # Accept berlin_local people even when behind on creative
+            # But be more selective if we're very far behind on creative
+            if creative_deficit > 150:
+                # Very far behind - only accept if venue is not too full
+                return venue_fill_ratio < 0.7
+            if creative_deficit > 100:
+                return venue_fill_ratio < 0.8
+            return True
+        
+        # Accept if they help with techno_lover (critical - need 650)
+        if is_techno_lover and techno_count < techno_min:
+            # Accept techno_lover people even when behind on creative
+            # But be more selective if we're very far behind on creative
+            if creative_deficit > 150:
+                return venue_fill_ratio < 0.6
+            if creative_deficit > 100:
+                return venue_fill_ratio < 0.75
+            return True
+        
+        # Accept if they have multiple critical attributes (very valuable)
+        critical_help = sum([
+            is_berlin_local and berlin_local_count < berlin_local_min,
+            is_techno_lover and techno_count < techno_min
+        ])
+        if critical_help >= 2:
+            # Has both berlin_local and techno_lover - very valuable
+            return venue_fill_ratio < 0.9
+        
+        # Reject everyone else - they don't help with critical constraints
+        # This saves space for creative people while still allowing critical attributes
         return False
     
     # Strategy 2: Accept people with multiple attributes (even if some are already met)
