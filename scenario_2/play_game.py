@@ -493,7 +493,7 @@ def should_accept_person(
         # We'll skip 1st, skip 2nd, accept 3rd, skip 4th, skip 5th, accept 6th, etc.
         # So: accept when well_connected_encountered % 3 == 0 (and counter > 0)
         # Counter values: 1st=1 (skip), 2nd=2 (skip), 3rd=3 (accept), 4th=4 (skip), 5th=5 (skip), 6th=6 (accept)...
-        if well_connected_encountered > 0 and well_connected_encountered % 3 == 0:
+        if well_connected_encountered > 0 and well_connected_encountered % 4 == 0:
             # This is every third well_connected person (3rd, 6th, 9th...)
             # Only accept if we still need well_connected or if it helps with other constraints
             if well_connected_count < well_connected_min:
