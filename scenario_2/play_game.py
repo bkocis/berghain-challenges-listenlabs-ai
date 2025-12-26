@@ -487,14 +487,14 @@ def should_accept_person(
     # Accepting well_connected can help us get berlin_local too
     # However, well_connected ↔ techno_lover: -0.47 (moderate negative)
     if is_well_connected:
-        # STRATEGY: Accept every second well_connected person to slow venue filling
+        # STRATEGY: Skip two, accept every third well_connected person to slow venue filling
         # This allows more time to search for rare creative people
         # well_connected_encountered tracks total encounters (not just admitted)
-        # We'll skip 1st, accept 2nd, skip 3rd, accept 4th, etc.
-        # So: accept when well_connected_encountered % 2 == 0 (and counter > 0)
-        # Counter values: 1st=1 (skip), 2nd=2 (accept), 3rd=3 (skip), 4th=4 (accept)...
-        if well_connected_encountered > 0 and well_connected_encountered % 2 == 0:
-            # This is an even-numbered well_connected person (2nd, 4th, 6th...)
+        # We'll skip 1st, skip 2nd, accept 3rd, skip 4th, skip 5th, accept 6th, etc.
+        # So: accept when well_connected_encountered % 3 == 0 (and counter > 0)
+        # Counter values: 1st=1 (skip), 2nd=2 (skip), 3rd=3 (accept), 4th=4 (skip), 5th=5 (skip), 6th=6 (accept)...
+        if well_connected_encountered > 0 and well_connected_encountered % 3 == 0:
+            # This is every third well_connected person (3rd, 6th, 9th...)
             # Only accept if we still need well_connected or if it helps with other constraints
             if well_connected_count < well_connected_min:
                 # Still need well_connected - accept this one
@@ -508,11 +508,11 @@ def should_accept_person(
                 # Reject to save space for creative people
                 return False
         elif well_connected_encountered > 0:
-            # This is an odd-numbered well_connected person (1st, 3rd, 5th...)
+            # This is not every third well_connected person (1st, 2nd, 4th, 5th, 7th, 8th...)
             # Skip/reject to slow venue filling and allow more search time for creatives
             # Only make exception if we're critically behind on well_connected
-            if well_connected_count < well_connected_min * 0.5:
-                # Very far behind (less than 50% of target) - accept even skipped ones
+            if well_connected_count < well_connected_min * 0.4:
+                # Very far behind (less than 40% of target) - accept even skipped ones
                 pass  # Continue to normal logic below
             else:
                 # Skip this one to save space and allow longer search for creatives
