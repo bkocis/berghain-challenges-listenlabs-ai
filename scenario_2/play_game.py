@@ -168,14 +168,14 @@ def should_accept_person(
     VENUE_FILL_MID_EARLY = 0.85     # Mid-early game - accept until 85% full
     VENUE_FILL_EARLY = 0.8          # Early game - accept until 80% full
     VENUE_FILL_MODERATE = 0.75      # Moderate fill - accept until 75% full
-    VENUE_FILL_LOW = 0.7            # Low fill - accept until 70% full
-    VENUE_FILL_VERY_LOW = 0.65      # Very low fill - accept until 65% full
-    VENUE_FILL_MINIMAL = 0.6        # Minimal fill - accept until 60% full
-    VENUE_FILL_VERY_MINIMAL = 0.5  # Very minimal fill - accept until 50% full
-    VENUE_FILL_EMPTY = 0.05         # Empty venue - accept if under 5% full
-    VENUE_FILL_VERY_EMPTY = 0.02    # Very empty - accept if under 2% full
-    VENUE_FILL_EXTREMELY_EMPTY = 0.005  # Extremely empty - accept if under 0.5% full
-    VENUE_FILL_ULTRA_EMPTY = 0.002      # Ultra empty - accept if under 0.2% full
+    VENUE_FILL_LOW = 0.5            # Low fill - accept until 50% full (more selective)
+    VENUE_FILL_VERY_LOW = 0.45      # Very low fill - accept until 45% full (more selective)
+    VENUE_FILL_MINIMAL = 0.4        # Minimal fill - accept until 40% full (more selective)
+    VENUE_FILL_VERY_MINIMAL = 0.3  # Very minimal fill - accept until 30% full (more selective)
+    VENUE_FILL_EMPTY = 0.01         # Empty venue - accept if under 1% full (more selective)
+    VENUE_FILL_VERY_EMPTY = 0.005    # Very empty - accept if under 0.5% full (more selective)
+    VENUE_FILL_EXTREMELY_EMPTY = 0.001  # Extremely empty - accept if under 0.1% full (more selective)
+    VENUE_FILL_ULTRA_EMPTY = 0.0005      # Ultra empty - accept if under 0.05% full (more selective)
     
     # Deficit thresholds - when to adjust behavior based on how far behind we are
     DEFICIT_VERY_HIGH = 200         # Very high deficit threshold
@@ -193,12 +193,12 @@ def should_accept_person(
     OVER_TARGET_MODERATE = 1.1      # Allow 10% over target (for most attributes)
     
     # Well_connected skip strategy parameters
-    WELL_CONNECTED_SKIP_MODULO = 6  # Accept every Nth well_connected person
+    WELL_CONNECTED_SKIP_MODULO = 8  # Accept every Nth well_connected person (more selective)
     WELL_CONNECTED_CRITICAL_RATIO = 0.25  # Accept skipped ones if under this % of target
     
     # Multi-attribute thresholds
-    MIN_ATTRIBUTES_FOR_STRATEGY_2 = 3  # Minimum attributes for Strategy 2
-    MIN_NEEDED_ATTRIBUTES = 2          # Minimum needed attributes for Strategy 3
+    MIN_ATTRIBUTES_FOR_STRATEGY_2 = 4  # Minimum attributes for Strategy 2 (more selective - require all 4)
+    MIN_NEEDED_ATTRIBUTES = 3          # Minimum needed attributes for Strategy 3 (more selective)
     MIN_CRITICAL_ATTRIBUTES = 2         # Minimum critical attributes needed
     
     # Default correlation values (fallbacks if not in attribute_statistics)
