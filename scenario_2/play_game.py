@@ -256,7 +256,7 @@ def should_accept_person(
     
     # HARD RULE: Reject all but creatives until we have 150 creatives
     # After reaching 150 creatives, continue with the normal strategy
-    if creative_count < 150:
+    if creative_count < 100:
         # Only accept if person is creative
         if is_creative:
             return True
@@ -308,6 +308,16 @@ def should_accept_person(
     
     # Count total attributes this person has (for multi-attribute scoring)
     total_attributes = sum([is_techno_lover, is_well_connected, is_creative, is_berlin_local])
+    
+    # PRIORITY RULE: Always accept people with ALL 4 attributes (the most valuable person possible)
+    # This person has techno_lover=True, well_connected=True, creative=True, berlin_local=True
+    # They help with ALL constraints simultaneously - accept almost always, especially near capacity
+    if is_techno_lover and is_well_connected and is_creative and is_berlin_local:
+        # This is the most valuable person - always accept unless venue is completely full
+        # Even at 99.9% capacity, accept them (they're worth more than anyone else)
+        if admitted_count < MAX_VENUE_CAPACITY:
+            return True
+        return False
     
     # CORRELATION-BASED PRIORITY: Check for rare valuable combinations
     # techno_lover + berlin_local is extremely rare (correlation -0.65)
