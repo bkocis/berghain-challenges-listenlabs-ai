@@ -193,8 +193,8 @@ def should_accept_person(
     OVER_TARGET_MODERATE = 1.1      # Allow 10% over target (for most attributes)
     
     # Well_connected skip strategy parameters
-    WELL_CONNECTED_SKIP_MODULO = 8  # Accept every Nth well_connected person (more selective)
-    WELL_CONNECTED_CRITICAL_RATIO = 0.25  # Accept skipped ones if under this % of target
+    WELL_CONNECTED_SKIP_MODULO = 12  # Accept every Nth well_connected person (very selective - was 8)
+    WELL_CONNECTED_CRITICAL_RATIO = 0.15  # Accept skipped ones if under this % of target (was 0.25)
     
     # Multi-attribute thresholds
     MIN_ATTRIBUTES_FOR_STRATEGY_2 = 4  # Minimum attributes for Strategy 2 (more selective - require all 4)
@@ -550,14 +550,24 @@ def should_accept_person(
     # Accepting well_connected can help us get berlin_local too
     # However, well_connected ↔ techno_lover: -0.47 (moderate negative)
     if is_well_connected:
-        # STRATEGY: Skip two, accept every third well_connected person to slow venue filling
+        # EARLY REJECTION: If we're already significantly over target, reject immediately
+        # This prevents accepting well_connected when we're already over (e.g., 667 vs 450 needed)
+        if well_connected_count >= well_connected_min:
+            # Already have enough well_connected - only accept if they have other critical attributes
+            # Check if they also have berlin_local (which we still need) and venue has room
+            if is_berlin_local and berlin_local_count < berlin_local_min:
+                # They have berlin_local which we need - only accept if venue is not too full
+                # and we're not way over on well_connected
+                if well_connected_count < well_connected_min * 1.05 and venue_fill_ratio < VENUE_FILL_MID:
+                    return True
+            # Reject all other well_connected people when we're already over target
+            return False
+        
+        # STRATEGY: Skip most, accept every Nth well_connected person to slow venue filling
         # This allows more time to search for rare creative people
         # well_connected_encountered tracks total encounters (not just admitted)
-        # We'll skip 1st, skip 2nd, accept 3rd, skip 4th, skip 5th, accept 6th, etc.
-        # So: accept when well_connected_encountered % 3 == 0 (and counter > 0)
-        # Counter values: 1st=1 (skip), 2nd=2 (skip), 3rd=3 (accept), 4th=4 (skip), 5th=5 (skip), 6th=6 (accept)...
         if well_connected_encountered > 0 and well_connected_encountered % WELL_CONNECTED_SKIP_MODULO == 0:
-            # This is every third well_connected person (3rd, 6th, 9th...)
+            # This is every Nth well_connected person (12th, 24th, 36th...)
             # Only accept if we still need well_connected or if it helps with other constraints
             if well_connected_count < well_connected_min:
                 # Still need well_connected - accept this one
@@ -571,11 +581,11 @@ def should_accept_person(
                 # Reject to save space for creative people
                 return False
         elif well_connected_encountered > 0:
-            # This is not every third well_connected person (1st, 2nd, 4th, 5th, 7th, 8th...)
+            # This is not every Nth well_connected person (1st-11th, 13th-23rd, etc.)
             # Skip/reject to slow venue filling and allow more search time for creatives
             # Only make exception if we're critically behind on well_connected
             if well_connected_count < well_connected_min * WELL_CONNECTED_CRITICAL_RATIO:
-                # Very far behind (less than 40% of target) - accept even skipped ones
+                # Very far behind (less than 15% of target) - accept even skipped ones
                 pass  # Continue to normal logic below
             else:
                 # Skip this one to save space and allow longer search for creatives
@@ -614,20 +624,18 @@ def should_accept_person(
                     return True
             return False
         
-        # Already have enough well_connected - be more selective
-        # But still consider if they might help with berlin_local (positive correlation)
-        if berlin_deficit > DEFICIT_MODERATE:
-            # Still need berlin_local - well_connected people are more likely to have it
-            # Accept if venue has room and we're not way over on well_connected
-            if well_connected_count < well_connected_min * OVER_TARGET_HIGH:
-                if venue_fill_ratio < VENUE_FILL_MID:
+        # This section should not be reached if we're already over target (handled by early rejection above)
+        # But keep as fallback for edge cases
+        # Already have enough well_connected - reject almost all
+        # Only accept if they have berlin_local (which we need) and we're not way over
+        if well_connected_count >= well_connected_min:
+            if is_berlin_local and berlin_local_count < berlin_local_min:
+                # They have berlin_local which we need - only accept if not way over on well_connected
+                if well_connected_count < well_connected_min * 1.05 and venue_fill_ratio < VENUE_FILL_MID:
                     return True
+            return False
         
-        # Already have enough well_connected and berlin_local is close
-        # Reject almost all - only accept in very early game
-        if venue_fill_ratio < VENUE_FILL_EMPTY:
-            if creative_deficit < DEFICIT_MICRO and berlin_deficit < DEFICIT_MINIMAL and techno_deficit < DEFICIT_TINY:
-                return True
+        # Fallback: reject all other cases
         return False
     
     # Strategy 5: Person has no needed attributes
