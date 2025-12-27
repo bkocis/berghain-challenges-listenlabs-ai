@@ -598,30 +598,27 @@ def should_accept_person(
         # This allows us to accumulate creatives before filling venue with well_connected
         # Creative is the rarest attribute (6.23% frequency) - we MUST prioritize it early
         if creative_count < creative_min:
-            # Still accumulating creatives - be VERY restrictive on well_connected
-            # Only accept well_connected if:
-            # 1. We're very far behind on well_connected (less than 20% of target)
-            # 2. AND venue is very empty (less than 30% full)
-            # 3. AND we're not too far behind on creative (at least 50% of target)
+            # Still accumulating creatives - be EXTREMELY restrictive on well_connected
+            # Reject almost all well_connected people to maximize space for creatives
             creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
-            if well_connected_count < well_connected_min * 0.2:
-                # Very far behind on well_connected - only accept if venue is very empty
-                # and we have at least 50% of creative target
-                if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.5:
-                    # Continue to normal logic below
+            
+            # Only accept well_connected if ALL of these conditions are met:
+            # 1. We're extremely far behind on well_connected (less than 10% of target)
+            # 2. AND venue is extremely empty (less than 20% full)
+            # 3. AND we have at least 80% of creative target
+            if well_connected_count < well_connected_min * 0.1:
+                # Extremely far behind on well_connected - only accept if venue is extremely empty
+                # and we have at least 80% of creative target
+                if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.8:
+                    # Continue to normal logic below - but will be checked again
                     pass
                 else:
                     # Reject to save space for creatives
                     return False
             else:
-                # Not critically behind on well_connected - reject to save space for creatives
-                # Only make exception if venue is extremely empty (< 20% full)
-                if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.7:
-                    # Venue is very empty and we have 70%+ of creative target - continue
-                    pass
-                else:
-                    # Reject to prioritize creative accumulation
-                    return False
+                # Not extremely behind on well_connected - ALWAYS reject to save space for creatives
+                # No exceptions - we need to prioritize creative accumulation
+                return False
         
         # EARLY REJECTION: If we're already over target, reject immediately
         # This prevents accepting well_connected when we're already over (e.g., 667 vs 450 needed)
@@ -653,14 +650,14 @@ def should_accept_person(
             # BUT: ALWAYS prioritize creative first, especially early in the game
             if well_connected_count < well_connected_min:
                 # Still need well_connected - but ALWAYS prioritize creative first
-                # Early game: if creative count is low, be even more restrictive
+                # Early game: if creative count is low, be EXTREMELY restrictive
                 if creative_count < creative_min:
-                    # Still accumulating creatives - be VERY restrictive
-                    # Only accept if venue is very empty and we have decent creative progress
+                    # Still accumulating creatives - be EXTREMELY restrictive
+                    # Only accept if venue is extremely empty and we have high creative progress
                     creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
-                    if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.6:
-                        # Venue is very empty (< 30% full) and we have 60%+ of creative target
-                        # Continue to normal logic below
+                    if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.85:
+                        # Venue is very empty (< 30% full) and we have 85%+ of creative target
+                        # Continue to normal logic below - but will be checked again
                         pass
                     else:
                         # Reject to save space for creatives
@@ -685,10 +682,13 @@ def should_accept_person(
                     return False
                 # Also check if we're still accumulating creatives
                 if creative_count < creative_min:
-                    # Still accumulating creatives - be more restrictive
+                    # Still accumulating creatives - be EXTREMELY restrictive
                     creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
-                    if creative_progress < 0.7:
-                        # Less than 70% of creative target - reject to save space
+                    if creative_progress < 0.85:
+                        # Less than 85% of creative target - reject to save space
+                        return False
+                    # Even if 85%+, only accept if venue is very empty
+                    if venue_fill_ratio >= VENUE_FILL_VERY_MINIMAL:
                         return False
                 return True
             else:
@@ -701,14 +701,17 @@ def should_accept_person(
             # Only make exception if we're critically behind on well_connected
             if well_connected_count < well_connected_min * WELL_CONNECTED_CRITICAL_RATIO:
                 # Very far behind (less than 10% of target) - accept even skipped ones
-                # BUT: only if we're not behind on creative AND we have decent creative progress
+                # BUT: only if we're not behind on creative AND we have high creative progress
                 if creative_deficit > DEFICIT_MINIMAL:
                     return False
-                # Early game: if creative count is low, be even more restrictive
+                # Early game: if creative count is low, be EXTREMELY restrictive
                 if creative_count < creative_min:
                     creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
-                    if creative_progress < 0.5:
-                        # Less than 50% of creative target - reject to save space
+                    if creative_progress < 0.85:
+                        # Less than 85% of creative target - reject to save space
+                        return False
+                    # Even if 85%+, only accept if venue is very empty
+                    if venue_fill_ratio >= VENUE_FILL_VERY_MINIMAL:
                         return False
                 pass  # Continue to normal logic below
             else:
@@ -720,12 +723,12 @@ def should_accept_person(
         # BUT: ALWAYS prioritize creative first, especially early in the game
         if well_connected_count < well_connected_min:
             # Need well_connected - but ALWAYS prioritize creative first
-            # Early game: if creative count is low, be VERY restrictive
+            # Early game: if creative count is low, be EXTREMELY restrictive
             if creative_count < creative_min:
-                # Still accumulating creatives - be VERY restrictive
+                # Still accumulating creatives - be EXTREMELY restrictive
                 creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
-                # Only accept if we have at least 70% of creative target and venue is very empty
-                if creative_progress < 0.7 or venue_fill_ratio >= VENUE_FILL_VERY_MINIMAL:
+                # Only accept if we have at least 85% of creative target AND venue is very empty
+                if creative_progress < 0.85 or venue_fill_ratio >= VENUE_FILL_VERY_MINIMAL:
                     # Reject to save space for creatives
                     return False
             
