@@ -944,25 +944,25 @@ def should_accept_person_hybrid(
     # STRATEGY 1: CRITICAL PRIORITY - Always accept creative until we have enough
     # ============================================================================
     # Creative is the rarest attribute (6.23% frequency) and we need 300
-    # This is too rare to reject early - accept almost all until we have enough
+    # This is too rare to reject early - accept ALL creative people until we have enough
     if is_creative:
+        # CRITICAL: Always accept creative until we reach minimum, NO EXCEPTIONS
+        # Even if venue is 99% full, we need creative more than anything
         if creative_count < creative_min:
-            # CRITICAL: Always accept creative until we reach minimum
             return True
         
-        # If we already have enough creative, be selective
-        # Only accept if we still need other critical attributes
+        # If we already have enough creative, still accept if we need other attributes
+        # Creative people often have other attributes too
         if creative_count >= creative_min:
-            # Check if we still need berlin_local or techno_lover
-            if berlin_deficit > 50 or techno_deficit > 50:
-                # Still significantly behind on other critical attributes
-                if venue_fill_ratio < 0.95:
-                    return True
-            # If we're over on creative and other constraints are met, reject
-            if creative_count >= creative_min * 1.05:
+            # Still accept if we need berlin_local or techno_lover
+            if berlin_deficit > 20 or techno_deficit > 20:
+                # Still behind on other critical attributes - accept
+                return True
+            # If we're way over on creative (10%+) and other constraints are met, reject
+            if creative_count >= creative_min * 1.10 and berlin_deficit <= 10 and techno_deficit <= 10:
                 return False
             # Otherwise, accept if venue has room
-            if venue_fill_ratio < 0.9:
+            if venue_fill_ratio < 0.98:
                 return True
         return False
     
@@ -1005,6 +1005,15 @@ def should_accept_person_hybrid(
                 
                 # Calculate value for this attribute
                 attr_value = base_value * rarity_multiplier * max(0.5, correlation_bonus)
+                
+                # EXTRA BONUS for creative (rarest attribute, needs special handling)
+                if attr == "creative":
+                    attr_value *= 3.0  # Triple the value for creative
+                
+                # EXTRA BONUS for berlin_local (high requirement, only 39.8% frequency)
+                if attr == "berlin_local":
+                    attr_value *= 1.5  # 50% bonus for berlin_local
+                
                 person_value += attr_value
     
     # ============================================================================
@@ -1032,35 +1041,38 @@ def should_accept_person_hybrid(
     # 2. Current deficits (more accepting when far behind)
     # 3. Remaining capacity (more selective when capacity is low)
     
-    # Base threshold
+    # Base threshold - LOWERED SIGNIFICANTLY to be less selective
     if venue_fill_ratio < 0.3:
-        # Early game: be very selective (save space for rare attributes)
-        base_threshold = 80.0
+        # Early game: be moderately selective (but not too much - need to accept creative)
+        base_threshold = 20.0  # Lowered from 80.0
     elif venue_fill_ratio < 0.5:
         # Early-mid game: moderate selectivity
-        base_threshold = 50.0
+        base_threshold = 15.0  # Lowered from 50.0
     elif venue_fill_ratio < 0.7:
         # Mid game: less selective
-        base_threshold = 30.0
+        base_threshold = 10.0  # Lowered from 30.0
     elif venue_fill_ratio < 0.9:
         # Late game: accept more
-        base_threshold = 15.0
+        base_threshold = 5.0  # Lowered from 15.0
     else:
         # Very late game: accept almost anything valuable
-        base_threshold = 5.0
+        base_threshold = 2.0  # Lowered from 5.0
     
     # Adjust threshold based on maximum deficit
     max_deficit = max(deficits.values())
     if max_deficit > 200:
-        # Very far behind - be more accepting
-        base_threshold *= 0.3
+        # Very far behind - be much more accepting
+        base_threshold *= 0.2  # More aggressive (was 0.3)
     elif max_deficit > 100:
         # Far behind - be more accepting
-        base_threshold *= 0.5
+        base_threshold *= 0.3  # More aggressive (was 0.5)
     elif max_deficit > 50:
         # Moderately behind
+        base_threshold *= 0.5  # More aggressive (was 0.7)
+    elif max_deficit > 20:
+        # Slightly behind
         base_threshold *= 0.7
-    # If max_deficit <= 50, use base threshold as is
+    # If max_deficit <= 20, use base threshold as is
     
     # Adjust threshold based on remaining capacity
     if remaining_capacity < 50:
@@ -1078,16 +1090,45 @@ def should_accept_person_hybrid(
     # ============================================================================
     # If we're critically behind on berlin_local (need 750, only 39.8% frequency)
     # and this person has berlin_local, lower threshold significantly
-    if is_berlin_local and berlin_deficit > 100:
+    if is_berlin_local and berlin_deficit > 50:
         # Critically behind on berlin_local - accept more readily
-        threshold *= 0.4
+        threshold *= 0.3  # More aggressive (was 0.4)
     
     # If we're critically behind on techno_lover and this person has it
-    if is_techno_lover and techno_deficit > 100:
-        threshold *= 0.5
+    if is_techno_lover and techno_deficit > 50:
+        threshold *= 0.4  # More aggressive (was 0.5)
+    
+    # If we're critically behind on creative, accept almost anything with creative
+    # (This should rarely trigger since creative is handled in Strategy 1, but just in case)
+    if is_creative and creative_deficit > 50:
+        threshold *= 0.1  # Extremely low threshold for creative
     
     # ============================================================================
-    # STRATEGY 6: Reject if person has no needed attributes
+    # STRATEGY 6: Reject well_connected if we're already over target
+    # ============================================================================
+    # If we're already over on well_connected and person only has well_connected,
+    # reject to save space for creative and berlin_local
+    if is_well_connected and well_connected_count >= well_connected_min:
+        # Check if person has other needed attributes
+        has_other_needed = False
+        if is_berlin_local and berlin_deficit > 0:
+            has_other_needed = True
+        elif is_techno_lover and techno_deficit > 0:
+            has_other_needed = True
+        elif is_creative and creative_deficit > 0:
+            has_other_needed = True
+        
+        # If only well_connected and we're over, reject unless very early game
+        if not has_other_needed:
+            if venue_fill_ratio < 0.2:
+                # Very early game - might accept to fill venue slowly
+                pass  # Continue to value calculation
+            else:
+                # Reject to save space for creative and berlin_local
+                return False
+    
+    # ============================================================================
+    # STRATEGY 7: Reject if person has no needed attributes
     # ============================================================================
     # If person doesn't help with any constraint, reject
     has_needed_attr = False
@@ -1098,8 +1139,10 @@ def should_accept_person_hybrid(
     
     if not has_needed_attr:
         # Person doesn't help with any needed attribute
-        # Only accept if venue is extremely empty (very early game)
-        if venue_fill_ratio < 0.1:
+        # Reject to save space for people with needed attributes
+        # Only accept if venue is extremely empty (very early game) AND we're not behind on creative
+        if venue_fill_ratio < 0.05 and creative_deficit < 50:
+            # Extremely early game and creative is close to target
             return True
         return False
     
