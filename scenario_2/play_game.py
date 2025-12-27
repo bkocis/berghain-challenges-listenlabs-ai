@@ -1171,7 +1171,7 @@ def play_game(
         Dictionary containing final game results
     """
     if decision_strategy is None:
-        decision_strategy = should_accept_person_hybrid
+        decision_strategy = should_accept_person
     
     if constraints is None:
         constraints = []
