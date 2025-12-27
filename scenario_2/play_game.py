@@ -256,12 +256,22 @@ def should_accept_person(
     
     # HARD RULE: Reject all but creatives until we have 150 creatives
     # After reaching 150 creatives, continue with the normal strategy
-    if creative_count < 70:
+    if creative_count < 100:
         # Only accept if person is creative
         if is_creative:
             return True
         else:
             # Reject all non-creatives
+            return False
+    
+    # HARD RULE: When creatives condition is met, favor berlin_locals until requirement is met
+    # After reaching the required berlin_locals, continue with the normal strategy
+    if creative_count >= 100 and berlin_local_count < berlin_local_min:
+        # Only accept if person is berlin_local
+        if is_berlin_local:
+            return True
+        else:
+            # Reject all non-berlin_locals
             return False
     
     # Extract correlation information if available
