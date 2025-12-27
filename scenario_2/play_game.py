@@ -594,6 +594,35 @@ def should_accept_person(
     # Accepting well_connected can help us get berlin_local too
     # However, well_connected ↔ techno_lover: -0.47 (moderate negative)
     if is_well_connected:
+        # EARLY GAME RESTRICTION: Reject well_connected aggressively when creative count is low
+        # This allows us to accumulate creatives before filling venue with well_connected
+        # Creative is the rarest attribute (6.23% frequency) - we MUST prioritize it early
+        if creative_count < creative_min:
+            # Still accumulating creatives - be VERY restrictive on well_connected
+            # Only accept well_connected if:
+            # 1. We're very far behind on well_connected (less than 20% of target)
+            # 2. AND venue is very empty (less than 30% full)
+            # 3. AND we're not too far behind on creative (at least 50% of target)
+            creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
+            if well_connected_count < well_connected_min * 0.2:
+                # Very far behind on well_connected - only accept if venue is very empty
+                # and we have at least 50% of creative target
+                if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.5:
+                    # Continue to normal logic below
+                    pass
+                else:
+                    # Reject to save space for creatives
+                    return False
+            else:
+                # Not critically behind on well_connected - reject to save space for creatives
+                # Only make exception if venue is extremely empty (< 20% full)
+                if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.7:
+                    # Venue is very empty and we have 70%+ of creative target - continue
+                    pass
+                else:
+                    # Reject to prioritize creative accumulation
+                    return False
+        
         # EARLY REJECTION: If we're already over target, reject immediately
         # This prevents accepting well_connected when we're already over (e.g., 667 vs 450 needed)
         if well_connected_count >= well_connected_min:
@@ -621,9 +650,22 @@ def should_accept_person(
         if well_connected_encountered > 0 and well_connected_encountered % WELL_CONNECTED_SKIP_MODULO == 0:
             # This is every Nth well_connected person (15th, 30th, 45th...)
             # Only accept if we still need well_connected or if it helps with other constraints
-            # BUT: ALWAYS prioritize creative first
+            # BUT: ALWAYS prioritize creative first, especially early in the game
             if well_connected_count < well_connected_min:
                 # Still need well_connected - but ALWAYS prioritize creative first
+                # Early game: if creative count is low, be even more restrictive
+                if creative_count < creative_min:
+                    # Still accumulating creatives - be VERY restrictive
+                    # Only accept if venue is very empty and we have decent creative progress
+                    creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
+                    if venue_fill_ratio < VENUE_FILL_VERY_MINIMAL and creative_progress >= 0.6:
+                        # Venue is very empty (< 30% full) and we have 60%+ of creative target
+                        # Continue to normal logic below
+                        pass
+                    else:
+                        # Reject to save space for creatives
+                        return False
+                
                 # If we're behind on creative, reject to save space
                 if creative_deficit > DEFICIT_MINIMAL:
                     # Behind on creative - reject to save space
@@ -641,6 +683,13 @@ def should_accept_person(
                 # But only if we're not behind on creative
                 if creative_deficit > DEFICIT_MINIMAL:
                     return False
+                # Also check if we're still accumulating creatives
+                if creative_count < creative_min:
+                    # Still accumulating creatives - be more restrictive
+                    creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
+                    if creative_progress < 0.7:
+                        # Less than 70% of creative target - reject to save space
+                        return False
                 return True
             else:
                 # Already have enough well_connected and don't need berlin_local urgently
@@ -652,9 +701,15 @@ def should_accept_person(
             # Only make exception if we're critically behind on well_connected
             if well_connected_count < well_connected_min * WELL_CONNECTED_CRITICAL_RATIO:
                 # Very far behind (less than 10% of target) - accept even skipped ones
-                # BUT: only if we're not behind on creative
+                # BUT: only if we're not behind on creative AND we have decent creative progress
                 if creative_deficit > DEFICIT_MINIMAL:
                     return False
+                # Early game: if creative count is low, be even more restrictive
+                if creative_count < creative_min:
+                    creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
+                    if creative_progress < 0.5:
+                        # Less than 50% of creative target - reject to save space
+                        return False
                 pass  # Continue to normal logic below
             else:
                 # Skip this one to save space and allow longer search for creatives
@@ -662,9 +717,18 @@ def should_accept_person(
         
         # CORRELATION-BASED: If we need berlin_local, well_connected people are more likely to have it
         # This makes well_connected more valuable when we need berlin_local
-        # BUT: ALWAYS prioritize creative first
+        # BUT: ALWAYS prioritize creative first, especially early in the game
         if well_connected_count < well_connected_min:
             # Need well_connected - but ALWAYS prioritize creative first
+            # Early game: if creative count is low, be VERY restrictive
+            if creative_count < creative_min:
+                # Still accumulating creatives - be VERY restrictive
+                creative_progress = creative_count / creative_min if creative_min > 0 else 1.0
+                # Only accept if we have at least 70% of creative target and venue is very empty
+                if creative_progress < 0.7 or venue_fill_ratio >= VENUE_FILL_VERY_MINIMAL:
+                    # Reject to save space for creatives
+                    return False
+            
             if creative_deficit > DEFICIT_MINIMAL:
                 # Behind on creative - reject to save space
                 return False
