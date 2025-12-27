@@ -254,6 +254,16 @@ def should_accept_person(
     creative_count = attribute_counts.get("creative", 0)
     berlin_local_count = attribute_counts.get("berlin_local", 0)
     
+    # HARD RULE: Reject all but creatives until we have 150 creatives
+    # After reaching 150 creatives, continue with the normal strategy
+    if creative_count < 150:
+        # Only accept if person is creative
+        if is_creative:
+            return True
+        else:
+            # Reject all non-creatives
+            return False
+    
     # Extract correlation information if available
     correlations = {}
     if attribute_statistics and "correlations" in attribute_statistics:
