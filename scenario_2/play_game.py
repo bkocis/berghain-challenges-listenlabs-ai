@@ -228,11 +228,11 @@ def should_accept_person(
     
     # HARD RULE: Always accept people with ONLY berlin_local (no other attributes)
     # This combination: techno_lover=False, well_connected=False, creative=False, berlin_local=True
-    if not is_techno_lover and not is_well_connected and not is_creative and is_berlin_local:
-        return True
+    # if not is_techno_lover and not is_well_connected and not is_creative and is_berlin_local:
+    #     return True
 
-    if is_techno_lover and is_well_connected and not is_creative and is_berlin_local:
-        return False
+    # if is_techno_lover and is_well_connected and not is_creative and is_berlin_local:
+    #     return False
     
     # # HARD RULE: Always accept people with creative=True (regardless of other attributes)
     # if is_creative:
