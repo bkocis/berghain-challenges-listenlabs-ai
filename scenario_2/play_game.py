@@ -256,7 +256,7 @@ def should_accept_person(
     
     # HARD RULE: Reject all but creatives until we have 150 creatives
     # After reaching 150 creatives, continue with the normal strategy
-    if creative_count < 100:
+    if creative_count < 70:
         # Only accept if person is creative
         if is_creative:
             return True
