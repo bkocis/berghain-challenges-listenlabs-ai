@@ -193,8 +193,8 @@ def should_accept_person(
     OVER_TARGET_MODERATE = 1.1      # Allow 10% over target (for most attributes)
     
     # Well_connected skip strategy parameters
-    WELL_CONNECTED_SKIP_MODULO = 10  # Accept every Nth well_connected person (more restrictive)
-    WELL_CONNECTED_CRITICAL_RATIO = 0.15  # Accept skipped ones if under this % of target (more restrictive)
+    WELL_CONNECTED_SKIP_MODULO = 15  # Accept every Nth well_connected person (more restrictive)
+    WELL_CONNECTED_CRITICAL_RATIO = 0.10  # Accept skipped ones if under this % of target (more restrictive)
     
     # Multi-attribute thresholds
     MIN_ATTRIBUTES_FOR_STRATEGY_2 = 3  # Minimum attributes for Strategy 2
