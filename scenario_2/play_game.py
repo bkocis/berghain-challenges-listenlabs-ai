@@ -823,6 +823,292 @@ def should_accept_person(
     return False
 
 
+def should_accept_person_hybrid(
+    person_attributes: Dict[str, bool],
+    constraints: list,
+    admitted_count: int,
+    attribute_counts: Dict[str, int],
+    total_admitted: int,
+    attribute_statistics: Optional[Dict[str, Any]] = None,
+    well_connected_encountered: int = 0
+) -> bool:
+    """
+    Hybrid strategy combining expected value calculation, dynamic thresholds,
+    correlation-aware prioritization, and urgency-based decisions.
+    
+    Framework:
+    1. Expected Value Calculation - Quantify each person's value
+    2. Dynamic Thresholds - Adjust selectivity based on game state
+    3. Correlation-Aware Prioritization - Account for attribute dependencies
+    4. Urgency-Based Decisions - More accepting when behind, selective when ahead
+    
+    Args:
+        person_attributes: Dictionary of attribute IDs to boolean values
+        constraints: List of constraint dictionaries with 'attribute' and 'minCount'
+        admitted_count: Current number of admitted people
+        attribute_counts: Dictionary tracking count of each attribute in admitted people
+        total_admitted: Total number of people admitted so far
+        attribute_statistics: Optional dictionary with 'relativeFrequencies' and 'correlations'
+        well_connected_encountered: Counter for well_connected encounters (for compatibility)
+    
+    Returns:
+        True to accept, False to reject
+    """
+    # If venue is full, reject
+    if admitted_count >= MAX_VENUE_CAPACITY:
+        return False
+    
+    # Extract attribute values
+    is_techno_lover = person_attributes.get("techno_lover", False)
+    is_well_connected = person_attributes.get("well_connected", False)
+    is_creative = person_attributes.get("creative", False)
+    is_berlin_local = person_attributes.get("berlin_local", False)
+    
+    # Get constraint requirements
+    constraint_mins = {}
+    for constraint in constraints:
+        constraint_mins[constraint['attribute']] = constraint['minCount']
+    
+    # Default values if not in constraints
+    techno_min = constraint_mins.get("techno_lover", 650)
+    well_connected_min = constraint_mins.get("well_connected", 450)
+    creative_min = constraint_mins.get("creative", 300)
+    berlin_local_min = constraint_mins.get("berlin_local", 750)
+    
+    # Get current counts
+    techno_count = attribute_counts.get("techno_lover", 0)
+    well_connected_count = attribute_counts.get("well_connected", 0)
+    creative_count = attribute_counts.get("creative", 0)
+    berlin_local_count = attribute_counts.get("berlin_local", 0)
+    
+    # Calculate deficits (how many more we need)
+    techno_deficit = max(0, techno_min - techno_count)
+    well_connected_deficit = max(0, well_connected_min - well_connected_count)
+    creative_deficit = max(0, creative_min - creative_count)
+    berlin_deficit = max(0, berlin_local_min - berlin_local_count)
+    
+    deficits = {
+        "techno_lover": techno_deficit,
+        "well_connected": well_connected_deficit,
+        "creative": creative_deficit,
+        "berlin_local": berlin_deficit
+    }
+    
+    # Get frequencies and correlations from statistics
+    frequencies = {}
+    correlations = {}
+    
+    if attribute_statistics:
+        frequencies = attribute_statistics.get("relativeFrequencies", {})
+        correlations = attribute_statistics.get("correlations", {})
+    
+    # Default frequencies if not provided
+    if not frequencies:
+        frequencies = {
+            "techno_lover": 0.6265,
+            "well_connected": 0.47,
+            "creative": 0.06227,
+            "berlin_local": 0.398
+        }
+    
+    # Default correlations if not provided
+    if not correlations:
+        correlations = {
+            "techno_lover": {
+                "berlin_local": -0.65,
+                "well_connected": -0.47,
+                "creative": 0.095
+            },
+            "well_connected": {
+                "berlin_local": 0.57,
+                "techno_lover": -0.47,
+                "creative": 0.142
+            },
+            "berlin_local": {
+                "techno_lover": -0.65,
+                "well_connected": 0.57,
+                "creative": 0.144
+            },
+            "creative": {
+                "techno_lover": 0.095,
+                "well_connected": 0.142,
+                "berlin_local": 0.144
+            }
+        }
+    
+    # Calculate venue fill ratio
+    venue_fill_ratio = admitted_count / MAX_VENUE_CAPACITY
+    remaining_capacity = MAX_VENUE_CAPACITY - admitted_count
+    
+    # ============================================================================
+    # STRATEGY 1: CRITICAL PRIORITY - Always accept creative until we have enough
+    # ============================================================================
+    # Creative is the rarest attribute (6.23% frequency) and we need 300
+    # This is too rare to reject early - accept almost all until we have enough
+    if is_creative:
+        if creative_count < creative_min:
+            # CRITICAL: Always accept creative until we reach minimum
+            return True
+        
+        # If we already have enough creative, be selective
+        # Only accept if we still need other critical attributes
+        if creative_count >= creative_min:
+            # Check if we still need berlin_local or techno_lover
+            if berlin_deficit > 50 or techno_deficit > 50:
+                # Still significantly behind on other critical attributes
+                if venue_fill_ratio < 0.95:
+                    return True
+            # If we're over on creative and other constraints are met, reject
+            if creative_count >= creative_min * 1.05:
+                return False
+            # Otherwise, accept if venue has room
+            if venue_fill_ratio < 0.9:
+                return True
+        return False
+    
+    # ============================================================================
+    # STRATEGY 2: Calculate Expected Value of this person
+    # ============================================================================
+    person_value = 0.0
+    
+    for attr, has_attr in person_attributes.items():
+        if has_attr:
+            deficit = deficits.get(attr, 0)
+            if deficit > 0:
+                # Base value = how much we need this attribute
+                base_value = deficit
+                
+                # Rarity multiplier (inverse frequency) - rarer attributes are more valuable
+                frequency = frequencies.get(attr, 0.5)
+                if frequency > 0:
+                    rarity_multiplier = 1.0 / frequency
+                else:
+                    rarity_multiplier = 10.0  # Very rare
+                
+                # Correlation bonus/penalty
+                # If this attribute is negatively correlated with others we need,
+                # it's more valuable (harder to find in combination)
+                correlation_bonus = 1.0
+                for other_attr, other_deficit in deficits.items():
+                    if other_attr != attr and other_deficit > 0:
+                        # Get correlation (try both directions)
+                        corr = correlations.get(attr, {}).get(other_attr, 0)
+                        if corr == 0:
+                            corr = correlations.get(other_attr, {}).get(attr, 0)
+                        
+                        # Negative correlation = more valuable (rare combo)
+                        if corr < -0.3:
+                            correlation_bonus += abs(corr) * 0.5
+                        # Positive correlation = less bonus (common combo)
+                        elif corr > 0.3:
+                            correlation_bonus -= corr * 0.2
+                
+                # Calculate value for this attribute
+                attr_value = base_value * rarity_multiplier * max(0.5, correlation_bonus)
+                person_value += attr_value
+    
+    # ============================================================================
+    # STRATEGY 3: Special bonus for rare valuable combinations
+    # ============================================================================
+    # techno_lover + berlin_local is extremely rare (correlation -0.65)
+    # This combination is HIGHLY valuable since we need both but they rarely co-occur
+    if is_techno_lover and is_berlin_local:
+        # This is an extremely rare and valuable combination
+        combo_bonus = 100.0  # High bonus
+        if techno_deficit > 0 or berlin_deficit > 0:
+            combo_bonus *= 2.0  # Even higher if we need both
+        person_value += combo_bonus
+    
+    # well_connected + berlin_local is common (correlation +0.57) - still valuable
+    if is_well_connected and is_berlin_local:
+        if berlin_deficit > 0:
+            person_value += 30.0  # Moderate bonus
+    
+    # ============================================================================
+    # STRATEGY 4: Dynamic Threshold Calculation
+    # ============================================================================
+    # Adjust threshold based on:
+    # 1. Venue fill ratio (more selective early, less selective late)
+    # 2. Current deficits (more accepting when far behind)
+    # 3. Remaining capacity (more selective when capacity is low)
+    
+    # Base threshold
+    if venue_fill_ratio < 0.3:
+        # Early game: be very selective (save space for rare attributes)
+        base_threshold = 80.0
+    elif venue_fill_ratio < 0.5:
+        # Early-mid game: moderate selectivity
+        base_threshold = 50.0
+    elif venue_fill_ratio < 0.7:
+        # Mid game: less selective
+        base_threshold = 30.0
+    elif venue_fill_ratio < 0.9:
+        # Late game: accept more
+        base_threshold = 15.0
+    else:
+        # Very late game: accept almost anything valuable
+        base_threshold = 5.0
+    
+    # Adjust threshold based on maximum deficit
+    max_deficit = max(deficits.values())
+    if max_deficit > 200:
+        # Very far behind - be more accepting
+        base_threshold *= 0.3
+    elif max_deficit > 100:
+        # Far behind - be more accepting
+        base_threshold *= 0.5
+    elif max_deficit > 50:
+        # Moderately behind
+        base_threshold *= 0.7
+    # If max_deficit <= 50, use base threshold as is
+    
+    # Adjust threshold based on remaining capacity
+    if remaining_capacity < 50:
+        # Very little capacity left - be very selective
+        base_threshold *= 1.5
+    elif remaining_capacity < 100:
+        # Low capacity - be more selective
+        base_threshold *= 1.2
+    
+    # Final threshold
+    threshold = base_threshold
+    
+    # ============================================================================
+    # STRATEGY 5: Urgency-based adjustments
+    # ============================================================================
+    # If we're critically behind on berlin_local (need 750, only 39.8% frequency)
+    # and this person has berlin_local, lower threshold significantly
+    if is_berlin_local and berlin_deficit > 100:
+        # Critically behind on berlin_local - accept more readily
+        threshold *= 0.4
+    
+    # If we're critically behind on techno_lover and this person has it
+    if is_techno_lover and techno_deficit > 100:
+        threshold *= 0.5
+    
+    # ============================================================================
+    # STRATEGY 6: Reject if person has no needed attributes
+    # ============================================================================
+    # If person doesn't help with any constraint, reject
+    has_needed_attr = False
+    for attr, has_attr in person_attributes.items():
+        if has_attr and deficits.get(attr, 0) > 0:
+            has_needed_attr = True
+            break
+    
+    if not has_needed_attr:
+        # Person doesn't help with any needed attribute
+        # Only accept if venue is extremely empty (very early game)
+        if venue_fill_ratio < 0.1:
+            return True
+        return False
+    
+    # ============================================================================
+    # FINAL DECISION: Compare value to threshold
+    # ============================================================================
+    return person_value >= threshold
+
+
 def play_game(
     game_id: str,
     constraints: Optional[list] = None,
@@ -842,7 +1128,7 @@ def play_game(
         Dictionary containing final game results
     """
     if decision_strategy is None:
-        decision_strategy = should_accept_person
+        decision_strategy = should_accept_person_hybrid
     
     if constraints is None:
         constraints = []
