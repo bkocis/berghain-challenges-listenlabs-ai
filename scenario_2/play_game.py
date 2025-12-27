@@ -230,10 +230,13 @@ def should_accept_person(
     # This combination: techno_lover=False, well_connected=False, creative=False, berlin_local=True
     if not is_techno_lover and not is_well_connected and not is_creative and is_berlin_local:
         return True
+
+    if is_techno_lover and is_well_connected and not is_creative and is_berlin_local:
+        return False
     
-    # HARD RULE: Always accept people with creative=True (regardless of other attributes)
-    if is_creative:
-        return True
+    # # HARD RULE: Always accept people with creative=True (regardless of other attributes)
+    # if is_creative:
+    #     return True
     
     # Get constraint requirements from constraints list
     constraint_mins = {}
