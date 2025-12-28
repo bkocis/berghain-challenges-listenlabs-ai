@@ -1,5 +1,206 @@
 [
   {
+    "gameId": "41f7025f-3d53-402f-9fe2-02abe7e8cc37",
+    "date": "2025-12-28T13:14:11.629451",
+    "dateReadable": "2025-12-28 13:14:11",
+    "status": "failed",
+    "admitted": 999,
+    "rejected": 4175,
+    "totalProcessed": 5174,
+    "constraintStatus": {
+      "techno_lover": {
+        "count": 630,
+        "minRequired": 650,
+        "met": false
+      },
+      "well_connected": {
+        "count": 708,
+        "minRequired": 450,
+        "met": true
+      },
+      "creative": {
+        "count": 307,
+        "minRequired": 300,
+        "met": true
+      },
+      "berlin_local": {
+        "count": 758,
+        "minRequired": 750,
+        "met": true
+      }
+    },
+    "totalDecisionsRecorded": 5175,
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "techno_lover": 0.6265000000000001,
+        "well_connected": 0.4700000000000001,
+        "creative": 0.06227,
+        "berlin_local": 0.398
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": 1,
+          "well_connected": -0.4696169332674324,
+          "creative": 0.09463317039891586,
+          "berlin_local": -0.6549403815606182
+        },
+        "well_connected": {
+          "techno_lover": -0.4696169332674324,
+          "well_connected": 1,
+          "creative": 0.14197259140471485,
+          "berlin_local": 0.5724067808436452
+        },
+        "creative": {
+          "techno_lover": 0.09463317039891586,
+          "well_connected": 0.14197259140471485,
+          "creative": 1,
+          "berlin_local": 0.14446459505650772
+        },
+        "berlin_local": {
+          "techno_lover": -0.6549403815606182,
+          "well_connected": 0.5724067808436452,
+          "creative": 0.14446459505650772,
+          "berlin_local": 1
+        }
+      }
+    },
+    "attributeStatisticsStatus": {
+      "relativeFrequencies": {
+        "techno_lover": {
+          "actual": 0.63,
+          "target": 0.6265000000000001,
+          "difference": 0.0034999999999999476,
+          "met": true
+        },
+        "well_connected": {
+          "actual": 0.708,
+          "target": 0.4700000000000001,
+          "difference": 0.23799999999999988,
+          "met": false
+        },
+        "creative": {
+          "actual": 0.307,
+          "target": 0.06227,
+          "difference": 0.24473,
+          "met": false
+        },
+        "berlin_local": {
+          "actual": 0.758,
+          "target": 0.398,
+          "difference": 0.36,
+          "met": false
+        }
+      },
+      "correlations": {
+        "techno_lover": {
+          "techno_lover": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "well_connected": {
+            "actual": -0.1231763968390366,
+            "target": -0.4696169332674324,
+            "difference": 0.34644053642839584,
+            "met": false
+          },
+          "creative": {
+            "actual": 0.24064498486328792,
+            "target": 0.09463317039891586,
+            "difference": 0.14601181446437206,
+            "met": false
+          },
+          "berlin_local": {
+            "actual": -0.3314596577027229,
+            "target": -0.6549403815606182,
+            "difference": 0.3234807238578953,
+            "met": false
+          }
+        },
+        "well_connected": {
+          "techno_lover": {
+            "actual": -0.12317639683903661,
+            "target": -0.4696169332674324,
+            "difference": 0.3464405364283958,
+            "met": false
+          },
+          "well_connected": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "creative": {
+            "actual": 0.03168004312916704,
+            "target": 0.14197259140471485,
+            "difference": 0.11029254827554781,
+            "met": false
+          },
+          "berlin_local": {
+            "actual": 0.3252372584378048,
+            "target": 0.5724067808436452,
+            "difference": 0.24716952240584034,
+            "met": false
+          }
+        },
+        "creative": {
+          "techno_lover": {
+            "actual": 0.24064498486328792,
+            "target": 0.09463317039891586,
+            "difference": 0.14601181446437206,
+            "met": false
+          },
+          "well_connected": {
+            "actual": 0.03168004312916704,
+            "target": 0.14197259140471485,
+            "difference": 0.11029254827554781,
+            "met": false
+          },
+          "creative": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "berlin_local": {
+            "actual": -0.10481371608745021,
+            "target": 0.14446459505650772,
+            "difference": 0.24927831114395793,
+            "met": false
+          }
+        },
+        "berlin_local": {
+          "techno_lover": {
+            "actual": -0.33145965770272295,
+            "target": -0.6549403815606182,
+            "difference": 0.3234807238578952,
+            "met": false
+          },
+          "well_connected": {
+            "actual": 0.3252372584378048,
+            "target": 0.5724067808436452,
+            "difference": 0.24716952240584034,
+            "met": false
+          },
+          "creative": {
+            "actual": -0.10481371608745021,
+            "target": 0.14446459505650772,
+            "difference": 0.24927831114395793,
+            "met": false
+          },
+          "berlin_local": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          }
+        }
+      },
+      "allMet": false
+    }
+  },
+  {
     "gameId": "5c289f89-9e3a-4ccd-8f23-86a5062f2f06",
     "date": "2025-12-28T12:49:05.178860",
     "dateReadable": "2025-12-28 12:49:05",
