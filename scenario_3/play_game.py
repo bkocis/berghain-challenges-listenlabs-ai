@@ -4,6 +4,7 @@ Script to play the Berghain Challenge game by making accept/reject decisions
 for each person until the venue is full (1000 people) or 20,000 rejections occur.
 """
 
+import re
 import requests
 import json
 import sys
@@ -250,6 +251,20 @@ def should_accept_person(
     # Key correlation: international ↔ german_speaker: -0.717 (very strong negative)
     int_german_corr = correlations.get("international", {}).get("german_speaker", -0.717)
     
+    # HARD RULES
+
+    if queer_count < 150:
+        if is_queer:
+            return True
+        else:
+            return False
+    
+    if vinyl_count < 150:
+        if is_vinyl:
+            return True
+        else:
+            return False
+
     # STRATEGY 1: Always accept rare attributes (queer_friendly, vinyl_collector) when below target
     # These are very rare (4.5-4.6%), so we can't afford to reject them
     if is_queer and queer_count < queer_min * OVER_TARGET_RARE:
