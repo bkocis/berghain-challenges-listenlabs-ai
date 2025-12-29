@@ -1,5 +1,378 @@
 [
   {
+    "gameId": "c1aca91b-16ff-4200-b567-63d531066a9a",
+    "date": "2025-12-29T02:15:16.130277",
+    "dateReadable": "2025-12-29 02:15:16",
+    "status": "failed",
+    "admitted": 999,
+    "rejected": 4423,
+    "totalProcessed": 5422,
+    "constraintStatus": {
+      "underground_veteran": {
+        "count": 698,
+        "minRequired": 500,
+        "met": true
+      },
+      "international": {
+        "count": 582,
+        "minRequired": 650,
+        "met": false
+      },
+      "fashion_forward": {
+        "count": 648,
+        "minRequired": 550,
+        "met": true
+      },
+      "queer_friendly": {
+        "count": 227,
+        "minRequired": 250,
+        "met": false
+      },
+      "vinyl_collector": {
+        "count": 187,
+        "minRequired": 200,
+        "met": false
+      },
+      "german_speaker": {
+        "count": 512,
+        "minRequired": 800,
+        "met": false
+      }
+    },
+    "totalDecisionsRecorded": 5423,
+    "attributeStatistics": {
+      "relativeFrequencies": {
+        "underground_veteran": 0.6794999999999999,
+        "international": 0.5735,
+        "fashion_forward": 0.6910000000000002,
+        "queer_friendly": 0.04614,
+        "vinyl_collector": 0.044539999999999996,
+        "german_speaker": 0.4565000000000001
+      },
+      "correlations": {
+        "underground_veteran": {
+          "underground_veteran": 1,
+          "international": -0.08110175777152992,
+          "fashion_forward": -0.1696563475505309,
+          "queer_friendly": 0.03719928376753885,
+          "vinyl_collector": 0.07223521156389842,
+          "german_speaker": 0.11188766703422799
+        },
+        "international": {
+          "underground_veteran": -0.08110175777152992,
+          "international": 1,
+          "fashion_forward": 0.375711059360155,
+          "queer_friendly": 0.0036693314388711686,
+          "vinyl_collector": -0.03083247098181075,
+          "german_speaker": -0.7172529382519395
+        },
+        "fashion_forward": {
+          "underground_veteran": -0.1696563475505309,
+          "international": 0.375711059360155,
+          "fashion_forward": 1,
+          "queer_friendly": -0.0034530926793377476,
+          "vinyl_collector": -0.11024719606358546,
+          "german_speaker": -0.3521024461597403
+        },
+        "queer_friendly": {
+          "underground_veteran": 0.03719928376753885,
+          "international": 0.0036693314388711686,
+          "fashion_forward": -0.0034530926793377476,
+          "queer_friendly": 1,
+          "vinyl_collector": 0.47990640803167306,
+          "german_speaker": 0.04797381132680503
+        },
+        "vinyl_collector": {
+          "underground_veteran": 0.07223521156389842,
+          "international": -0.03083247098181075,
+          "fashion_forward": -0.11024719606358546,
+          "queer_friendly": 0.47990640803167306,
+          "vinyl_collector": 1,
+          "german_speaker": 0.09984452286269897
+        },
+        "german_speaker": {
+          "underground_veteran": 0.11188766703422799,
+          "international": -0.7172529382519395,
+          "fashion_forward": -0.3521024461597403,
+          "queer_friendly": 0.04797381132680503,
+          "vinyl_collector": 0.09984452286269897,
+          "german_speaker": 1
+        }
+      }
+    },
+    "attributeStatisticsStatus": {
+      "relativeFrequencies": {
+        "underground_veteran": {
+          "actual": 0.698,
+          "target": 0.6794999999999999,
+          "difference": 0.018500000000000072,
+          "met": false
+        },
+        "international": {
+          "actual": 0.582,
+          "target": 0.5735,
+          "difference": 0.008499999999999952,
+          "met": true
+        },
+        "fashion_forward": {
+          "actual": 0.648,
+          "target": 0.6910000000000002,
+          "difference": 0.04300000000000015,
+          "met": false
+        },
+        "queer_friendly": {
+          "actual": 0.227,
+          "target": 0.04614,
+          "difference": 0.18086000000000002,
+          "met": false
+        },
+        "vinyl_collector": {
+          "actual": 0.187,
+          "target": 0.044539999999999996,
+          "difference": 0.14246,
+          "met": false
+        },
+        "german_speaker": {
+          "actual": 0.512,
+          "target": 0.4565000000000001,
+          "difference": 0.05549999999999994,
+          "met": false
+        }
+      },
+      "correlations": {
+        "underground_veteran": {
+          "underground_veteran": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "international": {
+            "actual": -0.13351913824385905,
+            "target": -0.08110175777152992,
+            "difference": 0.052417380472329134,
+            "met": false
+          },
+          "fashion_forward": {
+            "actual": -0.19748676539055848,
+            "target": -0.1696563475505309,
+            "difference": 0.02783041784002757,
+            "met": false
+          },
+          "queer_friendly": {
+            "actual": 0.09127298115527793,
+            "target": 0.03719928376753885,
+            "difference": 0.05407369738773908,
+            "met": false
+          },
+          "vinyl_collector": {
+            "actual": 0.15905642681402282,
+            "target": 0.07223521156389842,
+            "difference": 0.0868212152501244,
+            "met": false
+          },
+          "german_speaker": {
+            "actual": 0.14651203571769103,
+            "target": 0.11188766703422799,
+            "difference": 0.03462436868346304,
+            "met": false
+          }
+        },
+        "international": {
+          "underground_veteran": {
+            "actual": -0.13351913824385905,
+            "target": -0.08110175777152992,
+            "difference": 0.052417380472329134,
+            "met": false
+          },
+          "international": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "fashion_forward": {
+            "actual": 0.3729945641999103,
+            "target": 0.375711059360155,
+            "difference": 0.002716495160244692,
+            "met": true
+          },
+          "queer_friendly": {
+            "actual": -0.0005517629596889947,
+            "target": 0.0036693314388711686,
+            "difference": 0.004221094398560163,
+            "met": true
+          },
+          "vinyl_collector": {
+            "actual": -0.01473615349673003,
+            "target": -0.03083247098181075,
+            "difference": 0.01609631748508072,
+            "met": false
+          },
+          "german_speaker": {
+            "actual": -0.5961774393026951,
+            "target": -0.7172529382519395,
+            "difference": 0.12107549894924441,
+            "met": false
+          }
+        },
+        "fashion_forward": {
+          "underground_veteran": {
+            "actual": -0.19748676539055848,
+            "target": -0.1696563475505309,
+            "difference": 0.02783041784002757,
+            "met": false
+          },
+          "international": {
+            "actual": 0.3729945641999103,
+            "target": 0.375711059360155,
+            "difference": 0.002716495160244692,
+            "met": true
+          },
+          "fashion_forward": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "queer_friendly": {
+            "actual": -0.035469257449580315,
+            "target": -0.0034530926793377476,
+            "difference": 0.032016164770242564,
+            "met": false
+          },
+          "vinyl_collector": {
+            "actual": -0.18352545957080876,
+            "target": -0.11024719606358546,
+            "difference": 0.0732782635072233,
+            "met": false
+          },
+          "german_speaker": {
+            "actual": -0.39700378680574755,
+            "target": -0.3521024461597403,
+            "difference": 0.04490134064600726,
+            "met": false
+          }
+        },
+        "queer_friendly": {
+          "underground_veteran": {
+            "actual": 0.09127298115527793,
+            "target": 0.03719928376753885,
+            "difference": 0.05407369738773908,
+            "met": false
+          },
+          "international": {
+            "actual": -0.0005517629596889947,
+            "target": 0.0036693314388711686,
+            "difference": 0.004221094398560163,
+            "met": true
+          },
+          "fashion_forward": {
+            "actual": -0.035469257449580315,
+            "target": -0.0034530926793377476,
+            "difference": 0.032016164770242564,
+            "met": false
+          },
+          "queer_friendly": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "vinyl_collector": {
+            "actual": 0.5666467001126382,
+            "target": 0.47990640803167306,
+            "difference": 0.08674029208096512,
+            "met": false
+          },
+          "german_speaker": {
+            "actual": 0.05146476756467173,
+            "target": 0.04797381132680503,
+            "difference": 0.003490956237866695,
+            "met": true
+          }
+        },
+        "vinyl_collector": {
+          "underground_veteran": {
+            "actual": 0.15905642681402282,
+            "target": 0.07223521156389842,
+            "difference": 0.0868212152501244,
+            "met": false
+          },
+          "international": {
+            "actual": -0.014736153496730027,
+            "target": -0.03083247098181075,
+            "difference": 0.016096317485080724,
+            "met": false
+          },
+          "fashion_forward": {
+            "actual": -0.18352545957080876,
+            "target": -0.11024719606358546,
+            "difference": 0.0732782635072233,
+            "met": false
+          },
+          "queer_friendly": {
+            "actual": 0.5666467001126382,
+            "target": 0.47990640803167306,
+            "difference": 0.08674029208096512,
+            "met": false
+          },
+          "vinyl_collector": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          },
+          "german_speaker": {
+            "actual": 0.16550058867602935,
+            "target": 0.09984452286269897,
+            "difference": 0.06565606581333037,
+            "met": false
+          }
+        },
+        "german_speaker": {
+          "underground_veteran": {
+            "actual": 0.14651203571769103,
+            "target": 0.11188766703422799,
+            "difference": 0.03462436868346304,
+            "met": false
+          },
+          "international": {
+            "actual": -0.5961774393026951,
+            "target": -0.7172529382519395,
+            "difference": 0.12107549894924441,
+            "met": false
+          },
+          "fashion_forward": {
+            "actual": -0.39700378680574755,
+            "target": -0.3521024461597403,
+            "difference": 0.04490134064600726,
+            "met": false
+          },
+          "queer_friendly": {
+            "actual": 0.05146476756467173,
+            "target": 0.04797381132680503,
+            "difference": 0.003490956237866695,
+            "met": true
+          },
+          "vinyl_collector": {
+            "actual": 0.16550058867602935,
+            "target": 0.09984452286269897,
+            "difference": 0.06565606581333037,
+            "met": false
+          },
+          "german_speaker": {
+            "actual": 1.0,
+            "target": 1,
+            "difference": 0.0,
+            "met": true
+          }
+        }
+      },
+      "allMet": false
+    }
+  },
+  {
     "gameId": "939e7e17-80e6-4f02-a96c-1e3f770b3317",
     "date": "2025-12-29T01:49:55.044582",
     "dateReadable": "2025-12-29 01:49:55",
