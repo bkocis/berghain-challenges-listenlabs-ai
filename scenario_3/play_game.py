@@ -253,13 +253,13 @@ def should_accept_person(
     
     # HARD RULES
 
-    if queer_count < 180:
+    if queer_count < 130:
         if is_queer:
             return True
         else:
             return False
     
-    if vinyl_count < 180:
+    if vinyl_count < 130:
         if is_vinyl:
             return True
         else:
